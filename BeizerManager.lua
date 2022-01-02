@@ -177,6 +177,12 @@ do
         self.Started = false
     end
 
+    -- //
+    function BeizerManager.StopCurrent(self)
+        self.Active = false
+        self.t = 0
+    end
+
     -- // Switch to "Camera" Mode
     function BeizerManager.CameraMode(self)
         -- // Override get starting point
