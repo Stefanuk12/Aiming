@@ -7,11 +7,9 @@ return function(Type, PatchName)
 
         -- // Valid PatchName
         PatchName = PatchName or tostring(game.PlaceId)
-        if (PatchName ~= nil) then
-            local typeofPatchName = typeof(PatchName)
-            local errorFormat = "invalid type for %s (expected %s, got %s)"
-            assert(typeofPatchName == "string", errorFormat:format("PatchName", "string", typeofPatchName))
-        end
+        local typeofPatchName = typeof(PatchName)
+        local errorFormat = "invalid type for %s (expected %s, got %s)"
+        assert(typeofPatchName == "string", errorFormat:format("PatchName", "string", typeofPatchName))
     end
 
     -- // Vars
@@ -19,7 +17,7 @@ return function(Type, PatchName)
 
     -- // Attempt to load a patch for the game
     local Success, _ = pcall(function()
-        local URL = PatchFormat:format(PatchName, Type)
+        local URL = PatchFormat:format(Type, PatchName)
         loadstring(game:HttpGet(URL))()
     end)
 
@@ -30,5 +28,5 @@ return function(Type, PatchName)
     end
 
     -- // Return
-    return Aiming or AimingNPC
+    return (Type == "Module" and Aiming or AimingNPC)
 end
