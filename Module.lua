@@ -502,7 +502,7 @@ function Aiming.GetClosestToCursor()
         local Character = Utilities.Character(Player)
 
         -- // Make sure isn't ignored and Character exists
-        if (Checks.IsIgnored(Player) == false and Character) then
+        if (Ignored.IsIgnored(Player) == false and Character) then
             -- // Vars
             local TargetPartTemp, PartPositionTemp, PartPositionOnScreenTemp, Magnitude = Aiming.GetClosestTargetPartToCursor(Character)
 
