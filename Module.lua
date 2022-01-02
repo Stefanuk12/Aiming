@@ -188,7 +188,7 @@ do
             if (Result) then
                 -- // Vars
                 local PartHit = Result.Instance
-                local Visible = (not PartHit or IsDescendantOf(PartHit, PartDescendant))
+                local Visible = PartHit == Part or IsDescendantOf(PartHit, PartDescendant)
 
                 -- // Return
                 return Visible
