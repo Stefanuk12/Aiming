@@ -508,7 +508,7 @@ function Aiming.GetClosestToCursor()
                 -- // Check if is in FOV
                 if (Magnitude < ShortestDistance) then
                     -- // Check if Visible
-                    if (Aiming.VisibleCheck and not Utilities.IsPartVisible(TargetPartTemp, Character)) then continue end
+                    if (AimingSettings.VisibleCheck and not Utilities.IsPartVisible(TargetPartTemp, Character)) then continue end
 
                     -- // Set vars
                     ClosestPlayer = Player

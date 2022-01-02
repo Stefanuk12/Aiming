@@ -369,7 +369,7 @@ function AimingNPC.GetClosestToCursor()
                 -- // Check if is in FOV
                 if (Magnitude < ShortestDistance) then
                     -- // Check if Visible
-                    if (AimingNPC.VisibleCheck and not Utilities.IsPartVisible(TargetPartTemp, NPC)) then continue end
+                    if (AimingNPCSettings.VisibleCheck and not Utilities.IsPartVisible(TargetPartTemp, NPC)) then continue end
 
                     -- // Set vars
                     ClosestInstance = NPC
