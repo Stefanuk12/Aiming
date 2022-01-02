@@ -5,16 +5,21 @@
 ]]
 
 -- // Dependencies
-local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/ROBLOX/master/Universal/Aiming/Module.lua"))()
+local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/Module.lua"))()
 
 -- // Disable Team Check
-Aiming.TeamCheck(false)
-Aiming.Ignored.IgnoreOtherTeams = false
+local AimingIgnored = Aiming.Ignored
+AimingIgnored.TeamCheck(false)
+
+local AimingSettings = Aiming.Settings
+AimingSettings.Ignored.IgnoreLocalTeam = false
 
 -- // Downed Check
-function Aiming.CheckCustom(Player)
+local AimingChecks = Aiming.Checks
+local AimingUtilities = Aiming.Utilities
+function AimingChecks.Custom(Player)
     -- // Check if downed
-    local Character = Aiming.Character(Player)
+    local Character = AimingUtilities.Character(Player)
     local KOd = Character:WaitForChild("BodyEffects")["K.O"].Value
     local Grabbed = Character:FindFirstChild("GRABBING_CONSTRAINT") ~= nil
 

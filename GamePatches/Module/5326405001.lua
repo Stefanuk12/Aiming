@@ -5,7 +5,7 @@
 ]]
 
 -- // Dependencies
-local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/ROBLOX/master/Universal/Aiming/Module.lua"))()
+local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/Module.lua"))()
 
 -- // Services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -18,7 +18,8 @@ local Global = require(Libraries.Global)
 local Teams = Global.Teams
 
 -- // Team Check
-function Aiming.IsIgnoredTeam(Player)
+local AimingIgnored = Aiming.Ignored
+function AimingIgnored.IsIgnoredTeam(Player)
     -- //
     return (Teams[LocalPlayer] == Teams[Player])
 end
