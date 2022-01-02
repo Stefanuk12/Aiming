@@ -396,7 +396,7 @@ do
 
     -- // Check if the module is enabled and we have targets
     function Checks.IsAvailable()
-        return (Aiming.Enabled == true and Aiming.Selected.Instance)
+        return (AimingSettings.Enabled == true and Aiming.Selected.Instance)
     end
 end
 
