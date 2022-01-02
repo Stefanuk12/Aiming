@@ -6,6 +6,7 @@ return function(Type, PatchName)
         assert(Type == "NPC" or Type == "Module", "invalid type for module (NPC or Module)")
 
         -- // Valid PatchName
+        PatchName = PatchName or tostring(game.PlaceId)
         if (PatchName ~= nil) then
             local typeofPatchName = typeof(PatchName)
             local errorFormat = "invalid type for %s (expected %s, got %s)"
