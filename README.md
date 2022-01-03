@@ -1,2 +1,2 @@
 # Aiming Documentation
- hello
+hello, view [here](https://stefanuk12.github.io/Aiming/)
