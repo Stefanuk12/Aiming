@@ -35,7 +35,25 @@ nav:
         - Custom: ./aiming/modules/checks/custom.md
         - Health: ./aiming/modules/checks/health.md
         - Is Available: ./aiming/modules/checks/isavailable.md
-  
+      - Beizer Curve:
+        - Aim To: ./aiming/modules/beziercurve/aimto.md
+        - Aim To B: ./aiming/modules/beziercurve/aimtob.md
+        - Manager A: ./aiming/modules/beziercurve/managera.md
+        - Manager B: ./aiming/modules/beziercurve/managerb.md
+  - Beizer Manager:
+    - Camera Mode: ./beizermanager/cameramode.md
+    - Change Data: ./beizermanager/changedata.md
+    - Constructor: ./beizermanager/constructor.md
+    - Cubic Curve: ./beizermanager/cubiccurve.md
+    - Do Control Point: ./beizermanager/docontrolpoint.md
+    - Do Iteration: ./beizermanager/doiteration.md
+    - Draw Path Func: ./beizermanager/drawpathfunc.md
+    - Get Starting Point: ./beizermanager/getstartingpoint.md
+    - Modify End Point: ./beizermanager/modifyendpoint.md
+    - Mouse Mode: ./beizermanager/mousemode.md
+    - Start: ./beizermanager/start.md
+    - Stop: ./beizermanager/stop.md
+
 theme:
   name: material
 markdown_extensions:
