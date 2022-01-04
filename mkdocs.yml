@@ -8,12 +8,33 @@ nav:
     - Namecall: ./examples/namecall.md
     - Aim Lock: ./examples/aimlock.md
   - Aiming:
+    - Update FOV: ./aiming/updatefov.md
     - Get Closest Target Part To Cursor: ./aiming/getclosesttargetparttocursor.md
     - Get Closest To Cursor: ./aiming/getclosesttocursor.md
     - Selected: ./aiming/selected.md
     - Settings: ./aiming/settings.md
     - Signals: ./aiming/signals.md
-    - Update FOV: ./aiming/updatefov.md
+    - Modules:
+      - Index: ./aiming/modules/index.md
+      - Utilities:
+        - Calculate Chance: ./aiming/modules/utilities/calculatechance.md
+        - Camera Look At: ./aiming/modules/utilities/cameralookat.md
+        - Character: ./aiming/modules/utilities/character.md
+        - Is Part Visible: ./aiming/modules/utilities/ispartvisible.md
+        - Raycast: ./aiming/modules/utilities/raycast.md
+        - Set Camera CFrame: ./aiming/modules/utilities/setcameracframe.md
+      - Ignored:
+        - Ignore Player: ./aiming/modules/ignored/ignoreplayer.md
+        - Ignore Team: ./aiming/modules/ignored/ignoreteam.md
+        - Is Ignored: ./aiming/modules/ignored/isignored.md
+        - Is Ignored Team: ./aiming/modules/ignored/isignoredteam.md
+        - Team Check: ./aiming/modules/ignored/teamcheck.md
+        - Unignore Player: ./aiming/modules/ignored/unignoreplayer.md
+        - Unignore Team: ./aiming/modules/ignored/unignoreteam.md
+      - Checks:
+        - Custom: ./aiming/modules/checks/custom.md
+        - Health: ./aiming/modules/checks/health.md
+        - Is Available: ./aiming/modules/checks/isavailable.md
   
 theme:
   name: material
