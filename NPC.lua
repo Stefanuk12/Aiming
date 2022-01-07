@@ -54,6 +54,7 @@ local AimingNPCSettings = {
     Ignored = {}
 }
 local AimingNPC = {
+    ShowCredits = true,
     Settings = AimingNPCSettings,
 
     Signals = SignalManager.new(),
@@ -446,6 +447,11 @@ Heartbeat:Connect(function()
     AimingNPC.UpdateFOV()
     AimingNPC.GetClosestToCursor()
 end)
+
+-- // Credits (by disabling this and not including your own way of crediting within the script, e.g. credits tab, is violating the license agreement. Beware!)
+if (AimingNPC.ShowCredits) then
+    messagebox("Thanks to Stefanuk12 for their Aiming Module (v2, NPC)", "Credits", 0)
+end
 
 -- //
 return AimingNPC
