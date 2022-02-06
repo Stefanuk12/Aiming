@@ -32,7 +32,16 @@ local BeizerCurve = Aiming.BeizerCurve
 RunService:BindToRenderStep("AimLockAiming", 0, function()
     -- // Vars
     local Keybind = Settings.Keybind
-    local IsToggled = (Keybind.EnumType == Enum.KeyCode and UserInputService:IsKeyDown(Keybind) or UserInputService:IsMouseButtonPressed(Keybind))
+    local IsToggled = false
+
+    -- // Check if toggled
+    if (Keybind.EnumType == Enum.KeyCode) then
+        IsToggled = UserInputService:IsKeyDown(Keybind)
+    else
+        IsToggled = UserInputService:IsMouseButtonPressed(Keybind)
+    end
+
+    -- // Vars
     local CameraMode = Settings.ShouldUseCamera()
     local Manager = CameraMode and BeizerCurve.ManagerB or BeizerCurve.ManagerA
 
