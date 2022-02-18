@@ -485,7 +485,7 @@ function Aiming.GetClosestToCursor()
     -- // See if it passed the chance
     if (not Chance) then
         -- // Set
-        AimingSelected.Instance = LocalPlayer
+        AimingSelected.Instance = nil
         AimingSelected.Part = nil
         AimingSelected.Position = nil
         AimingSelected.OnScreen = false
