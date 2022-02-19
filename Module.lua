@@ -55,6 +55,11 @@ local AimingSettings = {
     },
 
     Ignored = {
+        WhitelistMode = {
+            Players = false,
+            Teams = false
+        },
+
         Teams = {
             {
                 Team = LocalPlayer.Team,
@@ -241,6 +246,7 @@ Aiming.Ignored = Ignored
 do
     -- // Vars
     local IgnoredSettings = Aiming.Settings.Ignored
+    local WhitelistMode = IgnoredSettings.WhitelistMode
 
     -- // Ignore player
     function Ignored.IgnorePlayer(Player)
@@ -330,7 +336,7 @@ do
         for _, IgnoredTeam in ipairs(IgnoredTeams) do
             -- // Make sure team matches
             if (Player.Team == IgnoredTeam.Team and Player.TeamColor == IgnoredTeam.TeamColor) then
-                return true
+                return not WhitelistMode.Teams
             end
         end
 
@@ -338,26 +344,39 @@ do
         return false
     end
 
-    -- // Check if player (and team) is ignored
-    function Ignored.IsIgnored(Player)
+    -- // Check if player is ignored
+    function Ignored.IsIgnoredPlayer(Player)
         -- // Vars
         local IgnoredPlayers = IgnoredSettings.Players
 
         -- // Loop
         for _, IgnoredPlayer in ipairs(IgnoredPlayers) do
+            -- // Vars
+            local Return = WhitelistMode.Players
+
             -- // Check if Player Id
             if (typeof(IgnoredPlayer) == "number" and Player.UserId == IgnoredPlayer) then
-                return true
+                return not Return
             end
 
             -- // Normal Player Instance
             if (IgnoredPlayer == Player) then
-                return true
+                return not Return
             end
         end
 
-        -- // Team check
-        return Ignored.IsIgnoredTeam(Player)
+        -- // Check if whitelist mode is on
+        if (WhitelistMode.Players) then
+            return true
+        end
+
+        -- // Default
+        return false
+    end
+
+    -- // Check if a player is ignored
+    function Ignored.IsIgnored(Player)
+        return Ignored.IsIgnoredPlayer(Player) or Ignored.IsIgnoredTeam(Player)
     end
 
     -- // Toggle team check
@@ -485,7 +504,7 @@ function Aiming.GetClosestToCursor()
     -- // See if it passed the chance
     if (not Chance) then
         -- // Set
-        AimingSelected.Instance = LocalPlayer
+        AimingSelected.Instance = nil
         AimingSelected.Part = nil
         AimingSelected.Position = nil
         AimingSelected.OnScreen = false
