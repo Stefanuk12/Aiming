@@ -172,6 +172,11 @@ do
         return Player.Character
     end
 
+    -- // Get team
+    function Utilities.TeamMatch(Player1, Player2)
+        return Player1.Team == Player2.Team and Player1.TeamColor == Player2.TeamColor
+    end
+
     -- // Check if a part is visible (to camera)
     function Utilities.IsPartVisible(Part, PartDescendant)
         -- // Vars
@@ -329,13 +334,13 @@ do
 
         -- // Check for others
         if (Ignored.IgnoreLocalTeam) then
-            return (LocalPlayer.Team == Player.Team and LocalPlayer.TeamColor == Player.TeamColor)
+            return Utilities.TeamMatch(LocalPlayer, Player)
         end
 
         -- // Check if team is ignored
         for _, IgnoredTeam in ipairs(IgnoredTeams) do
             -- // Make sure team matches
-            if (Player.Team == IgnoredTeam.Team and Player.TeamColor == IgnoredTeam.TeamColor) then
+            if (Utilities.TeamMatch(Player, IgnoredTeam)) then
                 return not WhitelistMode.Teams
             end
         end
