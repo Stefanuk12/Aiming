@@ -10,11 +10,13 @@ local AimingUtilities = Aiming.Utilities
 local AimingChecks = Aiming.Checks
 
 -- // Vars
+local CurrentCamera = workspace.CurrentCamera
 local Globals = getrenv()._G.globals
 local ModelInstances = Globals.gbl_sol_state.r15_models
 local Teams = Globals.cli_teams
 local CLIPlayers = Globals.cli_plrs
 local AlivePlayers = Globals.alive_tpv_sol_ids
+local fpv_sol_instances = Globals.fpv_sol_instances
 
 -- //
 function AimingUtilities.Character(Player)
@@ -52,6 +54,14 @@ function AimingChecks.Health(Player)
 
     -- // Check
     return table.find(AlivePlayers, PlayerId) ~= nil
+end
+
+-- //
+function Aiming.BeizerCurve.ManagerB.Function(Pitch, Yaw)
+    local RotationMatrix = CFrame.fromEulerAnglesYXZ(Pitch, Yaw, 0)
+    local Eye = fpv_sol_instances.eye
+    Eye.CFrame = CFrame.new(Eye.CFrame.Position) * RotationMatrix
+    CurrentCamera.CFrame = CFrame.new(CurrentCamera.CFrame.Position) * RotationMatrix
 end
 
 -- // Return
