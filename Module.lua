@@ -333,7 +333,7 @@ do
         local IgnoredTeams = IgnoredSettings.Teams
 
         -- // Check for others
-        if (Ignored.IgnoreLocalTeam) then
+        if (IgnoredSettings.IgnoreLocalTeam) then
             return Utilities.TeamMatch(LocalPlayer, Player)
         end
 
