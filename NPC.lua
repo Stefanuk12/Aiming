@@ -96,7 +96,7 @@ end
 do
     local SignalNames = {"InstanceChanged", "PartChanged", "PartPositionChanged", "OnScreenChanged"}
 
-    for _, SignalName in ipairs(SignalNames) do
+    for _, SignalName in pairs(SignalNames) do
         AimingNPC.Signals:Create(SignalName)
     end
 end
@@ -310,7 +310,7 @@ function AimingNPC.GetClosestTargetPartToCursor(NPC)
         -- // Check if it all
         if (TargetParts == "All") then
             -- // Loop through NPC children
-            for _, v in ipairs(GetChildren(NPC)) do
+            for _, v in pairs(GetChildren(NPC)) do
                 -- // See if it a part
                 if (v:IsA("BasePart")) then
                     -- // Check it
@@ -326,7 +326,7 @@ function AimingNPC.GetClosestTargetPartToCursor(NPC)
     -- //
     if (typeof(TargetParts) == "table") then
         -- // Loop through all target parts and check them
-        for _, TargetPartName in ipairs(TargetParts) do
+        for _, TargetPartName in pairs(TargetParts) do
             CheckTargetPart(TargetPartName)
         end
     end
@@ -359,7 +359,7 @@ function AimingNPC.GetClosestToCursor()
     end
 
     -- // Loop through all players
-    for _, NPC in ipairs(Utilities.GetNPCs()) do
+    for _, NPC in pairs(Utilities.GetNPCs()) do
         -- // Make sure NPC exists
         if (NPC) then
             -- // Vars
