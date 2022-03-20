@@ -13,5 +13,6 @@ local PlayerList = getrenv()._G.PlayerList
 
 -- // Getting Character
 function AimingUtilities.Character(Player)
-    return PlayerList[Player]
+    local Character = PlayerList[Player]
+    return Character and Character.Character or nil
 end
