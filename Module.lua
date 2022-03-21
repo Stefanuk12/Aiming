@@ -54,6 +54,12 @@ local AimingSettings = {
         Colour = Color3fromRGB(231, 84, 128)
     },
 
+    TracerSettings = {
+        Tracer = Drawingnew("Line"),
+        Enabled = true,
+        Colour = Color3fromRGB(231, 84, 128)
+    },
+
     Ignored = {
         WhitelistMode = {
             Players = false,
@@ -149,6 +155,35 @@ function Aiming.UpdateFOV()
 
     -- // Return circle
     return circle
+end
+
+-- // Update
+local tracer = AimingSettings.TracerSettings.Tracer
+function Aiming.UpdateTracer()
+    -- // Make sure the tracer exists
+    if (not tracer) then
+        return
+    end
+
+    -- // Vars
+    local MousePosition = GetMouseLocation(UserInputService)
+    local Settings = AimingSettings.TracerSettings
+
+    local Position = Aiming.Selected.Position
+    local IsValid = Aiming.Checks.IsAvailable()
+
+    -- // Set Tracer Properties
+    if (IsValid) then
+        tracer.Visible = Settings.Enabled
+        tracer.Color = Settings.Colour
+        tracer.From = MousePosition
+        tracer.To = Position
+    else
+        tracer.Visible = false
+    end
+
+    -- // Return tracer
+    return tracer
 end
 
 -- // Utilities
@@ -608,6 +643,7 @@ end
 -- // Heartbeat Function
 Heartbeat:Connect(function()
     Aiming.UpdateFOV()
+    Aiming.UpdateTracer()
     Aiming.GetClosestToCursor()
 end)
 
