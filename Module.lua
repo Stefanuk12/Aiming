@@ -90,6 +90,7 @@ local Aiming = {
         Instance = nil,
         Part = nil,
         Position = nil,
+        Velocity = nil, -- // You might need set the Y velocity to 0 or it bugs out /shrug
         OnScreen = false
     }
 }
@@ -190,6 +191,16 @@ end
 local Utilities = {}
 Aiming.Utilities = Utilities
 do
+    -- // Velocity
+    function Utilities.CalculateVelocity(Before, After, deltaTime)
+        -- // Vars
+        local Displacement = (After - Before)
+        local Velocity = Displacement / deltaTime
+
+        -- // Return
+        return Velocity
+    end
+
     -- // Chance
     function Utilities.CalculateChance(Percentage)
         -- // Floor the percentage
@@ -531,11 +542,13 @@ function Aiming.GetClosestTargetPartToCursor(Character)
 end
 
 -- //
-function Aiming.GetClosestToCursor()
+local PreviousPosition = nil
+function Aiming.GetClosestToCursor(deltaTime)
     -- // Vars
     local TargetPart = nil
     local ClosestPlayer = nil
     local PartPosition = nil
+    local PartVelocity = nil
     local PartOnScreen = nil
     local Chance = Utilities.CalculateChance(AimingSettings.HitChance)
     local ShortestDistance = circle.Radius
@@ -547,6 +560,8 @@ function Aiming.GetClosestToCursor()
         AimingSelected.Instance = nil
         AimingSelected.Part = nil
         AimingSelected.Position = nil
+        PreviousPosition = nil
+        AimingSelected.Velocity = nil
         AimingSelected.OnScreen = false
 
         -- // Return
@@ -576,6 +591,13 @@ function Aiming.GetClosestToCursor()
                     TargetPart = TargetPartTemp
                     PartPosition = PartPositionTemp
                     PartOnScreen = PartPositionOnScreenTemp
+
+                    -- // Velocity calculations
+                    if (not PreviousPosition) then
+                        PreviousPosition = TargetPart.Position
+                    end
+                    PartVelocity = Utilities.CalculateVelocity(PreviousPosition, TargetPart.Position, deltaTime)
+                    PreviousPosition = TargetPart.Position
                 end
             end
         end
@@ -586,6 +608,8 @@ function Aiming.GetClosestToCursor()
         Aiming.Signals:Fire("InstanceChanged", ClosestPlayer)
     end
     if (AimingSelected.Part ~= TargetPart) then
+        AimingSelected.Velocity = nil
+        PreviousPosition = nil
         Aiming.Signals:Fire("PartChanged", TargetPart)
     end
     if (AimingSelected.Position ~= PartPosition) then
@@ -599,6 +623,7 @@ function Aiming.GetClosestToCursor()
     AimingSelected.Instance = ClosestPlayer
     AimingSelected.Part = TargetPart
     AimingSelected.Position = PartPosition
+    AimingSelected.Velocity = PartVelocity
     AimingSelected.OnScreen = PartOnScreen
 end
 
@@ -641,10 +666,10 @@ do
 end
 
 -- // Heartbeat Function
-Heartbeat:Connect(function()
+Heartbeat:Connect(function(deltaTime)
     Aiming.UpdateFOV()
     Aiming.UpdateTracer()
-    Aiming.GetClosestToCursor()
+    Aiming.GetClosestToCursor(deltaTime)
 end)
 
 task.delay(1, function()
