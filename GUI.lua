@@ -36,7 +36,7 @@ local MainSection = AimingPage:addSection({
 -- // Aiming UI Elements
 MainSection:addToggle({
     title = "Enabled",
-    toggled = AimingSettings.Enabled,
+    default = AimingSettings.Enabled,
     callback = function(value)
         AimingSettings.Enabled = value
     end
@@ -44,7 +44,7 @@ MainSection:addToggle({
 
 MainSection:addToggle({
     title = "Visible Check",
-    toggled = AimingSettings.VisibleCheck,
+    default = AimingSettings.VisibleCheck,
     callback = function(value)
         AimingSettings.VisibleCheck = value
     end
@@ -127,7 +127,7 @@ local FOVSettingsSection = AimingPage:addSection({
 
 FOVSettingsSection:addToggle({
     title = "Enabled",
-    toggled = AimingSettings.FOVSettings.Enabled,
+    default = AimingSettings.FOVSettings.Enabled,
     callback = function(value)
         AimingSettings.FOVSettings.Enabled = value
     end
@@ -155,7 +155,7 @@ FOVSettingsSection:addSlider({
 
 FOVSettingsSection:addToggle({
     title = "Enabled",
-    toggled = AimingSettings.FOVSettings.Enabled,
+    default = AimingSettings.FOVSettings.Enabled,
     callback = function(value)
         AimingSettings.FOVSettings.Enabled = value
     end
@@ -255,7 +255,7 @@ local IgnoredTeamSection = AimingPage:addSection({
 
 IgnoredTeamSection:addToggle({
     title = "Ignore Local Team",
-    toggled = AimingSettings.Ignored.IgnoreLocalTeam,
+    default = AimingSettings.Ignored.IgnoreLocalTeam,
     callback = function(value)
         AimingSettings.Ignored.IgnoreLocalTeam = value
     end
