@@ -345,14 +345,27 @@ Teams.ChildRemoved:Connect(function()
     })
 end)
 
--- // Colour Theme Customisation Page
-local Theme = UI:addPage({
-    title = "Theme",
+-- // Settings Page
+local Settings = UI:addPage({
+    title = "Settings",
     icon = 5012544693
 })
 
+-- // Settings
+local SettingsSection = Settings:addSection({
+    title = "Settings"
+})
+
+SettingsSection:addKeybind({
+    title = "Toggle GUI",
+    key = Enum.KeyCode.LeftControl,
+    callback = function()
+        UI:toggle()
+    end
+})
+
 -- // Section for the Colour Theme Customisation Page
-local Colours = Theme:addSection({
+local Colours = Settings:addSection({
     title = "Colours"
 })
 
