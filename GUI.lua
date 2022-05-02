@@ -390,4 +390,5 @@ UI:SelectPage({
 })
 
 -- //
+Aiming.GUI = {UI, AimingPage}
 return UI, AimingPage
