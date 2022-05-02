@@ -364,7 +364,7 @@ for theme, colour in pairs(Themes) do
         callback = function(colour3)
             UI:setTheme({
                 theme = theme,
-                colour3 = colour3
+                color3 = colour3
             })
         end
     })
