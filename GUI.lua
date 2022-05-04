@@ -153,14 +153,6 @@ FOVSettingsSection:addSlider({
     end
 })
 
-FOVSettingsSection:addToggle({
-    title = "Enabled",
-    default = AimingSettings.FOVSettings.Enabled,
-    callback = function(value)
-        AimingSettings.FOVSettings.Enabled = value
-    end
-})
-
 FOVSettingsSection:addColorPicker({
     title = "Colour",
     default = AimingSettings.FOVSettings.Colour,
@@ -168,6 +160,28 @@ FOVSettingsSection:addColorPicker({
         AimingSettings.FOVSettings.Colour = value
     end
 })
+
+-- // Tracer Section for Aiming Page
+local TracerSettingsSection = AimingSettings:addSection({
+    title = "Tracer Management"
+})
+
+TracerSettingsSection:addToggle({
+    title = "Enabled",
+    default = AimingSettings.TracerSettings.Enabled,
+    callback = function(value)
+        AimingSettings.TracerSettings.Enabled = value
+    end
+})
+
+TracerSettingsSection:addColorPicker({
+    title = "Colour",
+    default = AimingSettings.TracerSettings.Colour,
+    callback = function(value)
+        AimingSettings.TracerSettings.Colour = value
+    end
+})
+
 
 -- // Ignored Player Section for Aiming Page
 local IgnoredPlayerSection = AimingPage:addSection({
