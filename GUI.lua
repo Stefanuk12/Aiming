@@ -162,7 +162,7 @@ FOVSettingsSection:addColorPicker({
 })
 
 -- // Tracer Section for Aiming Page
-local TracerSettingsSection = AimingSettings:addSection({
+local TracerSettingsSection = AimingPage:addSection({
     title = "Tracer Management"
 })
 
