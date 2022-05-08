@@ -2,6 +2,7 @@
 local Venyx = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Venyx-UI-Library/main/source2.lua"))()
 local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/Load.lua"))()()
 local AimingSettings = Aiming.Settings
+local AimingUtilities = Aiming.Utilities
 
 -- // Services
 local Players = game:GetService("Players")
@@ -65,27 +66,18 @@ local TargetPartSection = AimingPage:addSection({
     title = "Target Part Management"
 })
 
-local TargetPartInput
-TargetPartSection:addDropdown({
+local TargetPartInputDrop = TargetPartSection:addDropdown({
     title = "Select Target Part",
     list = AimingSettings.TargetPart,
     default = AimingSettings.TargetPart[1],
-    callback = function(value)
-        TargetPartInput.Options:Update({
-            default = value
-        })
-    end
-})
-TargetPartInput = TargetPartSection:addTextbox({
-    title = "Select Target Part",
-    default = AimingSettings.TargetPart[1]
+    callback = function() end
 })
 
 TargetPartSection:addButton({
     title = "Add",
     callback = function()
         -- // Vars
-        local TargetPart = TargetPartInput.Instance.Button.Textbox.Text
+        local TargetPart = TargetPartInputDrop.Options.title
 
         -- // Make sure does not exist already
         local TargetPartI = table.find(AimingSettings.TargetPart, TargetPart)
@@ -98,13 +90,18 @@ TargetPartSection:addButton({
 
         -- // Add
         table.insert(AimingSettings.TargetPart, TargetPart)
+
+        -- // Update dropdown
+        TargetPartInputDrop.Options:Update({
+            list = AimingSettings.TargetPart
+        })
     end
 })
 TargetPartSection:addButton({
     title = "Remove",
     callback = function()
         -- // Vars
-        local TargetPart = TargetPartInput.Instance.Button.Textbox.Text
+        local TargetPart = TargetPartInputDrop.Options.title
 
         -- // Make sure does exist already
         local TargetPartI = table.find(AimingSettings.TargetPart, TargetPart)
@@ -117,6 +114,98 @@ TargetPartSection:addButton({
 
         -- // Add
         table.remove(AimingSettings.TargetPart, TargetPartI)
+
+        -- // Update dropdown
+        TargetPartInputDrop.Options:Update({
+            list = AimingSettings.TargetPart
+        })
+    end
+})
+
+-- // Target Part Section for Aiming Page
+local TargetPartCharacterSection = AimingPage:addSection({
+    title = "Target Part (Character): Management"
+})
+
+-- // Get some parts
+local function GetCharacterParts()
+    -- // Vars
+    local Parts = {}
+
+    -- // Loop through Players
+    for _, Player in ipairs(Players:GetPlayers()) do
+        -- // Attempt to get their character
+        local Character = AimingUtilities.Character(Player)
+        if (not Character) then
+            continue
+        end
+
+        -- //
+        local CharacterParts = AimingUtilities.GetBodyParts(Character)
+        if (#CharacterParts > 0) then
+            Parts = CharacterParts
+            break
+        end
+    end
+
+    -- // Return
+    return Parts
+end
+
+-- //
+local CharacterParts = AimingUtilities.ArrayToString(GetCharacterParts())
+local TargetPartCharacterInput = TargetPartCharacterSection:addDropdown({
+    title = "Select Target Part",
+    list = CharacterParts,
+    callback = function() end
+})
+
+TargetPartCharacterSection:addButton({
+    title = "Add",
+    callback = function()
+        -- // Vars
+        local TargetPart = TargetPartCharacterInput.Options.title
+
+        -- // Make sure does not exist already
+        local TargetPartI = table.find(AimingSettings.TargetPart, TargetPart)
+        if (TargetPartI) then
+            return UI:Notify({
+                title = "Aiming: Target Part",
+                context = "Already added"
+            })
+        end
+
+        -- // Add
+        table.insert(AimingSettings.TargetPart, TargetPart)
+
+        -- // Update dropdown
+        TargetPartInputDrop.Options:Update({
+            list = AimingSettings.TargetPart
+        })
+    end
+})
+TargetPartCharacterSection:addButton({
+    title = "Remove",
+    callback = function()
+        -- // Vars
+        local TargetPart = TargetPartCharacterInput.Options.title
+
+        -- // Make sure does exist already
+        local TargetPartI = table.find(AimingSettings.TargetPart, TargetPart)
+        if (not TargetPartI) then
+            return UI:Notify({
+                title = "Aiming: Target Part",
+                context = "Not already added"
+            })
+        end
+
+        -- // Add
+        table.remove(AimingSettings.TargetPart, TargetPartI)
+
+        -- // Update dropdown
+        TargetPartInputDrop.Options:Update({
+            list = AimingSettings.TargetPart
+        })
     end
 })
 
