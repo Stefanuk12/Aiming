@@ -224,7 +224,7 @@ do
         local Parts = Character:GetChildren()
 
         -- // Check for non-baseparts and remove them
-        for i = 1, #Parts do
+        for i = #Parts, 1, -1 do
             if (not Parts[i]:IsA("BasePart")) then
                 table.remove(Parts, i)
             end
