@@ -218,6 +218,36 @@ do
         return Player.Character
     end
 
+    -- // Get Body Parts
+    function Utilities.GetBodyParts(Character)
+        -- // Vars
+        local Parts = Character:GetChildren()
+
+        -- // Check for non-baseparts and remove them
+        for i = 1, #Parts do
+            if (not Parts[i]:IsA("BasePart")) then
+                table.remove(Parts, i)
+            end
+        end
+
+        -- // Return
+        return Parts
+    end
+
+    -- // Table to String
+    function Utilities.ArrayToString(Array, Function)
+        -- // Default
+        Function = Function or tostring
+
+        -- // Tostring everything in the array
+        for i, v in pairs(Array) do
+            Array[i] = Function(v)
+        end
+
+        -- // Return
+        return Array
+    end
+
     -- // Get team
     function Utilities.TeamMatch(Player1, Player2)
         return Player1.Team == Player2.Team and Player1.TeamColor == Player2.TeamColor
