@@ -296,6 +296,17 @@ local PlayerDropdown = IgnoredPlayerSection:addDropdown({
     default = GetPlayersString()[1]
 })
 
+Players.PlayerAdded:Connect(function()
+    PlayerDropdown:Update({
+        list = GetPlayersString()
+    })
+end)
+Players.PlayerRemoving:Connect(function()
+    PlayerDropdown:Update({
+        list = GetPlayersString()
+    })
+end)
+
 IgnoredPlayerSection:addButton({
     title = "Ignore Player",
     callback = function()
