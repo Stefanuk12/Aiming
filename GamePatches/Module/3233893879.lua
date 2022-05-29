@@ -22,8 +22,16 @@ for _, v in ipairs(getgc(true)) do
 end
 
 -- //
-function AimingUtilities.Character(Player)
-    return (CharacterManager[Player] or {}).Body
+function AimingUtilities.Character(Player, Index)
+    -- // Default
+    Index = Index or "Body"
+
+    -- // Get the character
+    local Character = CharacterManager[Player]
+    if (not Character) then return end
+
+    -- // Return their body
+    return Index == "Character" and Character or Character:FindFirstChild(Index)
 end
 
 -- //
@@ -53,13 +61,13 @@ end
 -- //
 function AimingChecks.Health(Player)
     -- // Get Character
-    local Character = CharacterManager[Player]
-    if (not Character) then
+    local Health = AimingUtilities.Character(Player, "Health")
+    if (not Health) then
         return false
     end
 
     -- //
-    return CharacterManager[Player].Health.Value > 0
+    return Health.Value > 0
 end
 
 -- // Return
