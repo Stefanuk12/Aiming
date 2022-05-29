@@ -7,6 +7,7 @@
 -- // Dependencies
 local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/Module.lua"))()
 local AimingUtilities = Aiming.Utilities
+local AimingChecks = Aiming.Checks
 
 -- // Services
 local Teams = game:GetService("Teams")
@@ -47,6 +48,18 @@ function AimingUtilities.TeamMatch(Player1, Player2)
 
     -- // Return
     return Team1 == Team2
+end
+
+-- //
+function AimingChecks.Health(Player)
+    -- // Get Character
+    local Character = CharacterManager[Player]
+    if (not Character) then
+        return false
+    end
+
+    -- //
+    return CharacterManager[Player].Health.Value > 0
 end
 
 -- // Return
