@@ -6,11 +6,19 @@
 
 -- // Dependencies
 local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/Module.lua"))()
+local AimingSettings = Aiming.Settings
 local AimingUtilities = Aiming.Utilities
 local AimingChecks = Aiming.Checks
 
 -- // Services
+local Players = game:GetService("Players")
 local Teams = game:GetService("Teams")
+local Workspace = game:GetService("Workspace")
+
+-- // Vars
+local LocalPlayer = Players.LocalPlayer
+local CurrentCamera = Workspace.CurrentCamera
+local GunWorkspace = {}
 
 -- // Grabbing the character manager
 local CharacterManager
@@ -20,6 +28,23 @@ for _, v in ipairs(getgc(true)) do
         break
     end
 end
+
+-- // Adding all of the current guns
+local function IsGun(Model)
+    return not (Model:IsA("Folder") or Model.Name == "Terrain")
+end
+for _, v in ipairs(Workspace:GetChildren()) do
+    if (IsGun(v)) then
+        table.insert(GunWorkspace, v)
+    end
+end
+
+-- // Add all future guns
+Workspace.ChildAdded:Connect(function(child)
+    if (IsGun(child)) then
+        table.insert(GunWorkspace, child)
+    end
+end)
 
 -- //
 function AimingUtilities.Character(Player, Index)
@@ -68,6 +93,20 @@ function AimingChecks.Health(Player)
 
     -- //
     return Health.Value > 0
+end
+
+-- // Custom Raycast Ignore
+function AimingSettings.RaycastIgnore()
+    -- // Base Ignore
+    local Base = {CurrentCamera, AimingUtilities.Character(LocalPlayer)}
+
+    -- // Add all guns
+    for _, Gun in pairs(GunWorkspace) do
+        table.insert(Base, Gun)
+    end
+
+    -- // Return
+    return Base
 end
 
 -- // Return
