@@ -6,6 +6,10 @@
 
 -- // Dependencies
 local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/Module.lua"))()
+local AimingUtilities = Aiming.Utilities
+
+-- // Services
+local Teams = game:GetService("Teams")
 
 -- // Grabbing the character manager
 local CharacterManager
@@ -17,8 +21,32 @@ for _, v in ipairs(getgc(true)) do
 end
 
 -- //
-function Aiming.Utilities.Character(Player)
+function AimingUtilities.Character(Player)
     return (CharacterManager[Player] or {}).Body
+end
+
+-- //
+function AimingUtilities.TeamMatch(Player1, Player2)
+    -- // Getting their teams
+    local Team1 = Teams:FindFirstChild(Player1.Name, true)
+    local Team2 = Teams:FindFirstChild(Player2.Name, true)
+
+    -- // Make sure we have their teams
+    if not (Team1 or Team2) then
+        return false
+    end
+
+    -- // Grab Team
+    Team1 = Team1.Parent.Parent.Name
+    Team2 = Team2.Parent.Parent.Name
+
+    -- // FFA Check
+    if (Team1 == "FFA" or Team2 == "FFA") then
+        return false
+    end
+
+    -- // Return
+    return Team1 == Team2
 end
 
 -- // Return
