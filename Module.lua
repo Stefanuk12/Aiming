@@ -90,7 +90,7 @@ local Aiming = {
         Instance = nil,
         Part = nil,
         Position = nil,
-        Velocity = nil, -- // You might need set the Y velocity to 0 or it bugs out /shrug
+        Velocity = nil, -- // You might need set the Y velocity to `0` or it bugs out /shrug
         OnScreen = false
     }
 }
@@ -286,7 +286,7 @@ do
         return false
     end
 
-    -- // Get the Direction, Normal and Material
+    -- // Get the `Direction`, `Normal` and `Material`
     function Utilities.Raycast(Origin, Destination, UnitMultiplier)
         if (typeof(Origin) == "Vector3" and typeof(Destination) == "Vector3") then
             -- // Handling
@@ -309,18 +309,18 @@ do
         return nil
     end
 
-    -- //
+    -- // Sets the camera's CFrame, used for aim lock
     function Utilities.SetCameraCFrame(CFr)
         CurrentCamera.CFrame = CFr
     end
 
-    -- //
+    -- // Sets the camera to look at `Position`, used for aim lock
     function Utilities.CameraLookAt(Position)
         local LookAt = CFramelookAt(CurrentCamera.CFrame.Position, Position)
         Utilities.SetCameraCFrame(LookAt)
     end
 
-    -- // Gets the closest point on an object. Origin Point **must** be lined up on the same plane as the object if `OriginPoint` is NOT a ray
+    -- // Gets the closest point on an object. Origin Point **must** be lined up on the same plane as the object if `OriginPoint` is **not** a `Ray`
     function Utilities.ClosestPointOnObject(OriginPoint, Object)
         -- // Vars
         local ObjectPosition = Object.Position
