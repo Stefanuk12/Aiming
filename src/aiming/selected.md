@@ -3,8 +3,9 @@ This is a table that holds the data from `Aiming.GetClosestToCursor`. Use this t
 
 ## Structure
 | Name            | Description | Type                 |
-| --------------- | ----------- | -------------------  |
+| --------------- | ----------- | -------------------- |
 | `Instance`      | N/A         | `Instance<Model>`    |
 | `Part`          | N/A         | `Instance<BasePart>` |
 | `Position`      | N/A         | `Vector2`            |
+| `Velocity`      | N/A         | `Vector3`            |
 | `OnScreen`      | N/A         | `boolean`            |

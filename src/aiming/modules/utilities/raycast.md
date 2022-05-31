@@ -12,7 +12,7 @@ Performs a raycast
 `<tuple | nil>`
 
 | Name        | Description | Type            |
-| ----------- | ----------- | --------------  |
+| ----------- | ----------- | --------------- |
 | `Direction` | N/A         | `Vector3`       |
 | `Normal`    | N/A         | `Vector3`       |
 | `Material`  | N/A         | `Enum.Material` |

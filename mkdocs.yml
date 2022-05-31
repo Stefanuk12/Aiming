@@ -9,6 +9,7 @@ nav:
     - Aim Lock: ./examples/aimlock.md
   - Aiming:
     - Update FOV: ./aiming/updatefov.md
+    - Update Tracer: ./aiming/updatetracer.md
     - Get Closest Target Part To Cursor: ./aiming/getclosesttargetparttocursor.md
     - Get Closest To Cursor: ./aiming/getclosesttocursor.md
     - Selected: ./aiming/selected.md
@@ -17,12 +18,15 @@ nav:
     - Modules:
       - Index: ./aiming/modules/index.md
       - Utilities:
+        - ArrayTostring: ./aiming/modules/utilities/arraytostring.md
         - Calculate Chance: ./aiming/modules/utilities/calculatechance.md
         - Camera Look At: ./aiming/modules/utilities/cameralookat.md
         - Character: ./aiming/modules/utilities/character.md
+        - Get Body Parts: ./aiming/modules/utilities/getbodyparts.md
         - Is Part Visible: ./aiming/modules/utilities/ispartvisible.md
         - Raycast: ./aiming/modules/utilities/raycast.md
         - Set Camera CFrame: ./aiming/modules/utilities/setcameracframe.md
+        - Team Match: ./aiming/modules/utilities/teammatch.md
       - Ignored:
         - Ignore Player: ./aiming/modules/ignored/ignoreplayer.md
         - Ignore Team: ./aiming/modules/ignored/ignoreteam.md
@@ -53,6 +57,7 @@ nav:
     - Mouse Mode: ./beizermanager/mousemode.md
     - Start: ./beizermanager/start.md
     - Stop: ./beizermanager/stop.md
+    - Stop Current: ./beizermanager/stopcurrent.md
 
 theme:
   name: material

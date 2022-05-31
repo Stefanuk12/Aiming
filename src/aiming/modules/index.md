@@ -3,3 +3,6 @@ By the way, you may see that it says `Ignored.IgnorePlayer` for example as the p
 
 !!!note
     The actual path is `Aiming.PATH`, e.g. `Aiming.Ignored.IgnorePlayer`.
+
+### Aiming.ShowCredits
+Shows a `messagebox` popup crediting the creator, if `true`.
