@@ -269,6 +269,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#loading-the-gui" class="md-nav__link">
+    Loading the GUI
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1294,6 +1301,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#loading-the-gui" class="md-nav__link">
+    Loading the GUI
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1339,6 +1353,15 @@
 </code></pre></div></p>
 <h3 id="what-does-the-first-argument-mean">What does the first argument mean?</h3>
 <p>The first argument is the type of module you want. There are two types - <code>NPC</code> and <code>Module</code>. <code>NPC</code> is specifically designed to work with NPCs (but it requires configuration) and <code>Module</code> is specifically for Players.</p>
+<h3 id="loading-the-gui">Loading the GUI</h3>
+<p>To load the GUI, simply execute:
+<div class="highlight"><pre><span></span><code><span class="n">loadstring</span><span class="p">(</span><span class="n">game</span><span class="p">:</span><span class="n">HttpGet</span><span class="p">(</span><span class="s2">&quot;https://raw.githubusercontent.com/Stefanuk12/Aiming/main/GUI.lua&quot;</span><span class="p">))()</span>
+</code></pre></div></p>
+<p>It returns the <code>UI</code> and the <code>Aiming Page</code> so you can append to it as you wish. It uses my fork of the <code>Venyx</code> UI Library.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Make sure to execute the <code>GUI</code> <strong>before</strong> the <code>Aim Lock</code>, if you wish to have the GUI for the <code>Aim Lock</code> too.</p>
+</div>
 
               
             </article>

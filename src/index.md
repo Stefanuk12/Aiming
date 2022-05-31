@@ -31,3 +31,14 @@ local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefan
 
 ### What does the first argument mean?
 The first argument is the type of module you want. There are two types - `NPC` and `Module`. `NPC` is specifically designed to work with NPCs (but it requires configuration) and `Module` is specifically for Players.
+
+### Loading the GUI
+To load the GUI, simply execute:
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/GUI.lua"))()
+```
+
+It returns the `UI` and the `Aiming Page` so you can append to it as you wish. It uses my fork of the `Venyx` UI Library.
+
+!!! note
+    Make sure to execute the `GUI` **before** the `Aim Lock`, if you wish to have the GUI for the `Aim Lock` too.
