@@ -319,6 +319,45 @@ do
         local LookAt = CFramelookAt(CurrentCamera.CFrame.Position, Position)
         Utilities.SetCameraCFrame(LookAt)
     end
+
+    -- // Gets the closest point on an object. Origin Point **must** be lined up on the same plane as the object if `OriginPoint` is NOT a ray
+    function Utilities.ClosestPointOnObject(OriginPoint, Object)
+        -- // Vars
+        local ObjectPosition = Object.Position
+        local ObjectSize = Object.Size
+
+        -- // Resolving OriginPoint if is ray
+        if (typeof(OriginPoint) == "Ray") then
+            -- // Convert to Unit Ray, if it is not one
+            if (OriginPoint.Direction.Magnitude ~= 1) then
+                OriginPoint = OriginPoint.Unit
+            end
+
+            -- // Calculate the "lined up" point based upon the ray
+            local Magnitude = (ObjectPosition - OriginPoint.Origin).Magnitude
+            OriginPoint = OriginPoint.Origin + (OriginPoint.Direction * Magnitude)
+        end
+
+        -- // Matching the Y of Object to be same as Origin for later use as the Destination
+        local MatchedY = ObjectPosition + Vector3.new(0, -ObjectPosition.Y + OriginPoint.Y, 0)
+
+        -- // Working out the top and bottom so we can check if the point is in Y range
+        local Top = ObjectPosition + ObjectSize / 2
+        local Bottom = ObjectPosition - ObjectSize / 2
+
+        -- // Working out what the destination is, based upon whether within Y range or not
+        local Destination = (OriginPoint.Y >= Bottom.Y and OriginPoint.Y <= Top.Y) and MatchedY or ObjectPosition
+        local Direction = (Destination - OriginPoint)
+
+        -- // Casting a ray and getting the closest point on object
+        local WhitelistParms = RaycastParams.new()
+        WhitelistParms.FilterType = Enum.RaycastFilterType.Whitelist
+        WhitelistParms.FilterDescendantsInstances = {Object}
+        local RaycastResult = workspace:Raycast(OriginPoint, Direction, WhitelistParms)
+
+        -- // Return
+        return RaycastResult.Position
+    end
 end
 
 -- // Ignored
