@@ -30,6 +30,7 @@ do
         self.Smoothness = 0.0025
         self.DrawPath = false
         self.Function = mousemoveabs
+        self.Offset = function() return Vector2.new() end -- // can be static too
 
         self.Started = false
 
@@ -40,8 +41,9 @@ do
     -- // Aim to
     function BeizerManager.ChangeData(self, Data)
         -- // Vars
-        self.StartPoint = self.GetStartPoint() or Data.StartPoint
-        self.EndPoint = self.ModifyEndPoint(Data.TargetPosition)
+        local Offset = (typeof(self.Offset) == "function" and self.Offset() or self.Offset)
+        self.StartPoint = (self.GetStartPoint() or Data.StartPoint) + Offset
+        self.EndPoint = self.ModifyEndPoint(Data.TargetPosition) + Offset
         self.Smoothness = Data.Smoothness or self.Smoothness
         self.CurvePoints = Data.CurvePoints or self.CurvePoints
         self.DrawPath = Data.DrawPath or self.DrawPath
