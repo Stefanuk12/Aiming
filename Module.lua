@@ -190,11 +190,13 @@ end
 -- // Utilities
 local Utilities = {}
 Aiming.Utilities = Utilities
+local GetCurrentCamera
 do
     -- // Camera
     function Utilities.GetCurrentCamera()
         return Workspace.CurrentCamera
     end
+    GetCurrentCamera = Utilities.GetCurrentCamera
 
     -- // Velocity
     function Utilities.CalculateVelocity(Before, After, deltaTime)
@@ -364,7 +366,6 @@ do
         return RaycastResult.Position
     end
 end
-local GetCurrentCamera = Utilities.GetCurrentCamera
 
 -- // Ignored
 local Ignored = {}
