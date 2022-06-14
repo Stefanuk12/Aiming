@@ -14,7 +14,6 @@ local UserInputService = game:GetService("UserInputService")
 -- // Vars
 local Heartbeat = RunService.Heartbeat
 local LocalPlayer = Players.LocalPlayer
-local CurrentCamera = Workspace.CurrentCamera
 
 -- // Optimisation Vars (ugly)
 local Drawingnew = Drawing.new
@@ -22,12 +21,12 @@ local Color3fromRGB = Color3.fromRGB
 local GetGuiInset = GuiService.GetGuiInset
 local Randomnew = Random.new
 local mathfloor = math.floor
-local WorldToViewportPoint = CurrentCamera.WorldToViewportPoint
 local RaycastParamsnew = RaycastParams.new
 local EnumRaycastFilterTypeBlacklist = Enum.RaycastFilterType.Blacklist
 local Raycast = Workspace.Raycast
 local GetPlayers = Players.GetPlayers
 local Instancenew = Instance.new
+local WorldToViewportPoint = Instancenew("Camera").WorldToViewportPoint
 local IsDescendantOf = Instancenew("Part").IsDescendantOf
 local FindFirstChildWhichIsA = Instancenew("Part").FindFirstChildWhichIsA
 local FindFirstChild = Instancenew("Part").FindFirstChild
@@ -192,6 +191,11 @@ end
 local Utilities = {}
 Aiming.Utilities = Utilities
 do
+    -- // Camera
+    function Utilities.GetCurrentCamera()
+        return Workspace.CurrentCamera
+    end
+
     -- // Velocity
     function Utilities.CalculateVelocity(Before, After, deltaTime)
         -- // Vars
@@ -258,8 +262,8 @@ do
     function Utilities.IsPartVisible(Part, PartDescendant)
         -- // Vars
         local Character = Utilities.Character(LocalPlayer)
-        local Origin = CurrentCamera.CFrame.Position
-        local _, OnScreen = WorldToViewportPoint(CurrentCamera, Part.Position)
+        local Origin = GetCurrentCamera().CFrame.Position
+        local _, OnScreen = WorldToViewportPoint(GetCurrentCamera(), Part.Position)
 
         -- //
         if (OnScreen) then
@@ -267,7 +271,7 @@ do
             local raycastParams = RaycastParamsnew()
             raycastParams.FilterType = EnumRaycastFilterTypeBlacklist
             local RaycastIgnore = AimingSettings.RaycastIgnore
-            raycastParams.FilterDescendantsInstances = (typeof(RaycastIgnore) == "function" and RaycastIgnore() or RaycastIgnore) or {Character, CurrentCamera}
+            raycastParams.FilterDescendantsInstances = (typeof(RaycastIgnore) == "function" and RaycastIgnore() or RaycastIgnore) or {Character, GetCurrentCamera()}
 
             -- // Cast ray
             local Result = Raycast(Workspace, Origin, Part.Position - Origin, raycastParams)
@@ -312,12 +316,12 @@ do
 
     -- // Sets the camera's CFrame, used for aim lock
     function Utilities.SetCameraCFrame(CFr)
-        CurrentCamera.CFrame = CFr
+        GetCurrentCamera().CFrame = CFr
     end
 
     -- // Sets the camera to look at `Position`, used for aim lock
     function Utilities.CameraLookAt(Position)
-        local LookAt = CFramelookAt(CurrentCamera.CFrame.Position, Position)
+        local LookAt = CFramelookAt(GetCurrentCamera().CFrame.Position, Position)
         Utilities.SetCameraCFrame(LookAt)
     end
 
@@ -360,6 +364,7 @@ do
         return RaycastResult.Position
     end
 end
+local GetCurrentCamera = Utilities.GetCurrentCamera
 
 -- // Ignored
 local Ignored = {}
@@ -562,7 +567,7 @@ function Aiming.GetClosestTargetPartToCursor(Character)
         end
 
         -- // Get the length between Mouse and Target Part (on screen)
-        local PartPos, onScreen = WorldToViewportPoint(CurrentCamera, TargetPart.Position)
+        local PartPos, onScreen = WorldToViewportPoint(GetCurrentCamera(), TargetPart.Position)
         PartPos = Vector2new(PartPos.X, PartPos.Y)
 
         local MousePosition = GetMouseLocation(UserInputService) + AimingSettings.Offset
@@ -733,7 +738,7 @@ do
     -- // Convert function to use Aiming
     ManagerB.Function = function(Pitch, Yaw)
         local RotationMatrix = CFrame.fromEulerAnglesYXZ(Pitch, Yaw, 0)
-        Utilities.SetCameraCFrame(CFrame.new(CurrentCamera.CFrame.Position) * RotationMatrix)
+        Utilities.SetCameraCFrame(CFrame.new(GetCurrentCamera().CFrame.Position) * RotationMatrix)
     end
 
     -- // Start
