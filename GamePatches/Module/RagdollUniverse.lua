@@ -7,16 +7,15 @@
 -- // Dependencies
 local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/Module.lua"))()
 local AimingUtilities = Aiming.Utilities
+local AimingSettings = Aiming.Settings
 
 -- // Disable Team Check
 local AimingIgnored = Aiming.Ignored
 AimingIgnored.TeamCheck(false)
-
-local AimingSettings = Aiming.Settings
 AimingSettings.Ignored.IgnoreLocalTeam = false
 
--- // Services
-local Teams = game:GetService("Teams")
+-- // Set targetpart
+AimingSettings.TargetPart = {"Head", "Torso", "Right Arm", "Left Arm", "Right Leg", "Left Leg"}
 
 -- // Enable custom team check
 function AimingUtilities.TeamMatch(Player1, Player2)
@@ -25,33 +24,28 @@ function AimingUtilities.TeamMatch(Player1, Player2)
     local Team2
 
     -- // Grabbing their teams
-    for _, Team in ipairs(Teams:GetTeams()) do
-        -- //
-        local TeamPlayers = Team:GetPlayers()
-
-        -- // Set their team, if found
-        if (table.find(TeamPlayers, Player1)) then
-            Team1 = Team
-        elseif (table.find(TeamPlayers, Player2)) then
-            Team2 = Team
+    if (Player1:IsA("Team")) then
+        Team1 = Player1.Name
+    else
+        local Player1Character = AimingUtilities.Character(Player1)
+        if (Player1Character and Player1Character:FindFirstChild("Team")) then
+            Team1 = Player1Character.Team.Value
         end
     end
 
-    -- // Failsafing if a player is a taem
-    if (Player1:IsA("Team")) then
-        Team1 = Player1
-    end
     if (Player2:IsA("Team")) then
-        Team2 = Player2
-    end
-
-    -- // Failsafing for FFA gamemodes
-    if (Team1 == nil or Team2 == nil) then
-        return false
+        Team2 = Player2.Name
+    else
+        local Player2Character = AimingUtilities.Character(Player1)
+        if (Player2Character and Player2Character:FindFirstChild("Team")) then
+            Team2 = Player2Character.Team.Value
+        end
     end
 
     -- // Return
-    return Team1.TeamColor == Team2.TeamColor
+    local NoneTeamFailsafe = (Team1 == "None" or Team2 == "None") or (Team1 == nil or Team2 == nil)
+    local MainCheck = Team1 ~= Team2
+    return not (NoneTeamFailsafe or MainCheck)
 end
 
 -- // Return
