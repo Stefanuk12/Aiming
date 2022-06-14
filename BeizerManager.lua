@@ -8,6 +8,13 @@ local CurrentCamera = Workspace.CurrentCamera
 local RenderStepped = RunService.RenderStepped
 
 -- //
+local function MouseOffsetFunction(self, X, Y)
+    local Offset = (typeof(self.Offset) == "function" and self.Offset() or self.Offset)
+    local NewPosition = Vector2.new(X, Y) + Offset
+    mousemoveabs(NewPosition.X, NewPosition.Y)
+end
+
+-- //
 local BeizerManager = {}
 BeizerManager.__index = BeizerManager
 do
@@ -29,7 +36,7 @@ do
         self.Active = false
         self.Smoothness = 0.0025
         self.DrawPath = false
-        self.Function = mousemoveabs
+        self.Function = MouseOffsetFunction
         self.Offset = function() return Vector2.new() end -- // can be static too
 
         self.Started = false
@@ -41,9 +48,8 @@ do
     -- // Aim to
     function BeizerManager.ChangeData(self, Data)
         -- // Vars
-        local Offset = (typeof(self.Offset) == "function" and self.Offset() or self.Offset)
-        self.StartPoint = (self.GetStartPoint() or Data.StartPoint) + Offset
-        self.EndPoint = self.ModifyEndPoint(Data.TargetPosition) + Offset
+        self.StartPoint = (self.GetStartPoint() or Data.StartPoint)
+        self.EndPoint = self.ModifyEndPoint(Data.TargetPosition)
         self.Smoothness = Data.Smoothness or self.Smoothness
         self.CurvePoints = Data.CurvePoints or self.CurvePoints
         self.DrawPath = Data.DrawPath or self.DrawPath
@@ -131,7 +137,7 @@ do
                 local New = self.StartPoint:Lerp(self.EndPoint, clampedT)
 
                 -- //
-                self.Function(New.X, New.Y)
+                self:Function(New.X, New.Y)
             else
                 -- // Work out X, Y based upon the curve
                 local A, B = self.DoControlPoint(self.StartPoint, self.EndPoint, unpack(self.CurvePoints))
@@ -143,7 +149,7 @@ do
                 end
 
                 -- //
-                self.Function(CurvePosition.X, CurvePosition.Y)
+                self:Function(CurvePosition.X, CurvePosition.Y)
             end
         end
 
@@ -204,7 +210,7 @@ do
         end
 
         -- // Override the camera move function
-        self.Function = function(Pitch, Yaw)
+        self.Function = function(self, Pitch, Yaw)
             local RotationMatrix = CFrame.fromEulerAnglesYXZ(Pitch, Yaw, 0)
             CurrentCamera.CFrame = CFrame.new(CurrentCamera.CFrame.Position) * RotationMatrix
         end
@@ -219,7 +225,7 @@ do
     function BeizerManager.MouseMode(self)
         self.GetStartPoint = BeizerManager.GetStartPoint
         self.ModifyEndPoint = BeizerManager.ModifyEndPoint
-        self.Function = mousemoveabs
+        self.Function = MouseOffsetFunction
         self.DrawPathFunc = BeizerManager.DrawPathFunc
     end
 end
