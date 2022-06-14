@@ -45,6 +45,7 @@ local AimingSettings = {
     HitChance = 100,
     TargetPart = {"Head", "HumanoidRootPart"},
     RaycastIgnore = nil,
+    Offset = Vector2new(),
 
     FOVSettings = {
         Circle = Drawingnew("Circle"),
@@ -144,7 +145,7 @@ function Aiming.UpdateFOV()
     end
 
     -- // Vars
-    local MousePosition = GetMouseLocation(UserInputService)
+    local MousePosition = GetMouseLocation(UserInputService) + AimingSettings.Offset
     local Settings = AimingSettings.FOVSettings
 
     -- // Set Circle Properties
@@ -167,7 +168,7 @@ function Aiming.UpdateTracer()
     end
 
     -- // Vars
-    local MousePosition = GetMouseLocation(UserInputService)
+    local MousePosition = GetMouseLocation(UserInputService) + AimingSettings.Offset
     local Settings = AimingSettings.TracerSettings
 
     local Position = Aiming.Selected.Position
@@ -564,7 +565,7 @@ function Aiming.GetClosestTargetPartToCursor(Character)
         local PartPos, onScreen = WorldToViewportPoint(CurrentCamera, TargetPart.Position)
         PartPos = Vector2new(PartPos.X, PartPos.Y)
 
-        local MousePosition = GetMouseLocation(UserInputService)
+        local MousePosition = GetMouseLocation(UserInputService) + AimingSettings.Offset
         local GuiInset = GetGuiInset(GuiService)
         local AccountedPos = PartPos - GuiInset
 
