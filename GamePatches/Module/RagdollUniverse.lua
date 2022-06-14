@@ -1,7 +1,7 @@
 --[[
     Information:
 
-    - Raydoll Universe (https://www.roblox.com/games/1466995005/)
+    - Ragdoll Universe (https://www.roblox.com/games/1466995005/)
 ]]
 
 -- // Dependencies
