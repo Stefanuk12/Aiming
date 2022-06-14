@@ -714,9 +714,11 @@ do
     Aiming.BeizerCurve.ManagerA = ManagerA
     Aiming.BeizerCurve.ManagerB = ManagerB
 
-    BeizerManager.GetStartPoint = function(...)
-        return GetMouseLocation(UserInputService) + AimingSettings.Offset
+    local function Offset()
+        return AimingSettings.Offset
     end
+    ManagerA.Offset = Offset
+    ManagerB.Offset = Offset
 
     Aiming.BeizerCurve.AimTo = function(...)
         ManagerA:ChangeData(...)
