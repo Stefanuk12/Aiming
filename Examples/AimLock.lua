@@ -11,7 +11,7 @@ local AimingChecks = Aiming.Checks
 
 Aiming.AimLock = {
     Enabled = true,
-    ToggleBind = false, -- // true = Hold, false = Toggle (to enable)
+    ToggleBind = false, -- // true = Toggle, false = Hold (to enable)
     Keybind = Enum.UserInputType.MouseButton2, -- // You can also have Enum.KeyCode.E, etc.
 }
 local IsToggled = false
