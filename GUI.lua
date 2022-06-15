@@ -297,12 +297,12 @@ local PlayerDropdown = IgnoredPlayerSection:addDropdown({
 })
 
 Players.PlayerAdded:Connect(function()
-    PlayerDropdown.Update:Update({
+    PlayerDropdown.Options:Update({
         list = GetPlayersString()
     })
 end)
 Players.PlayerRemoving:Connect(function()
-    PlayerDropdown.Update:Update({
+    PlayerDropdown.Options:Update({
         list = GetPlayersString()
     })
 end)
