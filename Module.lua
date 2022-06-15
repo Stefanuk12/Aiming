@@ -367,25 +367,25 @@ do
     end
 
     -- // mafss 4 prediction
-    function Utilities.SolveProjectileTravelTime(Position, Speed, TargetPos, Gravity)
+    function Utilities.SolveProjectileTravelTime(Position, ProjSpeed, TargetPos, Gravity)
         -- // Vars
         local Direction = TargetPos - Position
         local DirectionXZ = Vector3.new(Direction.X, 0, Direction.Z)
         local Distance = DirectionXZ.Magnitude
-        local Speed2 = Speed * Speed
-        local Speed4 = Speed2 * Speed2
+        local ProjSpeed2 = ProjSpeed * ProjSpeed
+        local ProjSpeed4 = ProjSpeed2 * ProjSpeed2
         local InitialHeight = Direction.Y
         local GD = Gravity * Distance
 
-        local Root = Speed4 - Gravity * (Gravity * Distance * Distance + 2 * InitialHeight * Speed2)
+        local Root = ProjSpeed4 - Gravity * (Gravity * Distance * Distance + 2 * InitialHeight * ProjSpeed2)
         if (Root < 0) then
             return nil
         end
         Root = math.sqrt(Root)
 
-        local AngleLaunch = math.atan2(Speed2 - Root, GD)
-        local BulletDirection = DirectionXZ.Unit * math.cos(AngleLaunch) * Speed + Vector3.new(0, 1, 0) * math.sin(AngleLaunch) * Speed
-        local Time = Distance / (math.cos(AngleLaunch) * Speed)
+        local AngleLaunch = math.atan2(ProjSpeed2 - Root, GD)
+        local BulletDirection = DirectionXZ.Unit * math.cos(AngleLaunch) * ProjSpeed + Vector3.new(0, 1, 0) * math.sin(AngleLaunch) * ProjSpeed
+        local Time = Distance / (math.cos(AngleLaunch) * ProjSpeed)
 
         -- // Return
         return BulletDirection, Time
@@ -393,6 +393,13 @@ do
 
     function Utilities.SolvePrediction(Position, Velocity, Time)
         return Position + Velocity * Time
+    end
+
+    function Utilities.WorkoutDirection(Origin, Destination, PartVelocity, ProjSpeed, Gravity)
+        local _, TimeA = Utilities.SolveProjectileTravelTime(Origin, ProjSpeed, Destination, Gravity)
+        local SolvedPrediction = Utilities.SolvePrediction(Destination, PartVelocity, TimeA)
+        local Direction = Utilities.SolveProjectileTravelTime(Origin, ProjSpeed, SolvedPrediction, Gravity)
+        return Direction
     end
 end
 
