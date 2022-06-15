@@ -504,5 +504,5 @@ UI:SelectPage({
 })
 
 -- //
-Aiming.GUI = {UI, AimingPage}
-return UI, AimingPage
+Aiming.GUI = {UI, AimingPage, Settings}
+return UI, AimingPage, Settings
