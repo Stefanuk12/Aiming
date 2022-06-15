@@ -11,8 +11,10 @@ local AimingChecks = Aiming.Checks
 
 Aiming.AimLock = {
     Enabled = true,
+    ToggleBind = false, -- // true = Hold, false = Toggle (to enable)
     Keybind = Enum.UserInputType.MouseButton2, -- // You can also have Enum.KeyCode.E, etc.
 }
+local IsToggled = false
 local Settings = Aiming.AimLock
 
 -- //
@@ -27,20 +29,37 @@ function Settings.AimLockPosition(CameraMode)
     return Position, {}
 end
 
+-- // For the toggle and stuff
+local function CheckInput(Input, Expected)
+    local InputType = Expected.EnumType == Enum.KeyCode and "KeyCode" or "UserInputType"
+    return Input[InputType] == Expected
+end
+UserInputService.InputBegan:Connect(function(Input, GameProcessedEvent)
+    -- // Make sure is not processed
+    if (GameProcessedEvent) then
+        return
+    end
+
+    -- // Check if matches bind
+    if (CheckInput(Input, Settings.Keybind)) then
+        IsToggled = true
+    end
+end)
+UserInputService.InputEnded:Connect(function(Input, GameProcessedEvent)
+    -- // Make sure is not processed
+    if (GameProcessedEvent) then
+        return
+    end
+
+    -- // Check if matches bind
+    if (CheckInput(Input, Settings.Keybind) and not Settings.ToggleBind) then
+        IsToggled = false
+    end
+end)
+
 -- // Constantly run
 local BeizerCurve = Aiming.BeizerCurve
 RunService:BindToRenderStep("AimLockAiming", 0, function()
-    -- // Vars
-    local Keybind = Settings.Keybind
-    local IsToggled = false
-
-    -- // Check if toggled
-    if (Keybind.EnumType == Enum.KeyCode) then
-        IsToggled = UserInputService:IsKeyDown(Keybind)
-    else
-        IsToggled = UserInputService:IsMouseButtonPressed(Keybind)
-    end
-
     -- // Vars
     local CameraMode = Settings.ShouldUseCamera()
     local Manager = CameraMode and BeizerCurve.ManagerB or BeizerCurve.ManagerA
@@ -88,6 +107,14 @@ if (Aiming.GUI) then
         default = Settings.Keybind,
         changedCallback = function(value)
             Settings.Keybind = value
+        end
+    })
+
+    MainSection:addToggle({
+        title = "Toggle Bind",
+        default = Settings.ToggleBind,
+        callback = function(value)
+            Settings.ToggleBind = value
         end
     })
 
