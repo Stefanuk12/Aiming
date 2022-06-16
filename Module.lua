@@ -773,7 +773,7 @@ do
     ManagerB:CameraMode()
 
     -- // Convert function to use Aiming
-    ManagerB.Function = function(Pitch, Yaw)
+    ManagerB.Function = function(self, Pitch, Yaw)
         local RotationMatrix = CFrame.fromEulerAnglesYXZ(Pitch, Yaw, 0)
         Utilities.SetCameraCFrame(CFrame.new(GetCurrentCamera().CFrame.Position) * RotationMatrix)
     end
