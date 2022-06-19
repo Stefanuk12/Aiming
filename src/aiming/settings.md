@@ -18,6 +18,7 @@ This is a vararg, just input the path to the settings. For example: `"HitChance"
 | `HitChance`      | N/A         | `number`                             |
 | `TargetPart`     | N/A         | `string | string[]`                  |
 | `RaycastIgnore`  | N/A         | `<Instance[]> function | Instance[]` |
+| `Offset`         | N/A         | `<Vector2> function | Vector2`       |
 | `FOVSettings`    | N/A         | `see below`                          |
 | `TracerSettings` | N/A         | `see below`                          |
 | `Ignored`        | N/A         | `see below`                          |

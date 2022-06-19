@@ -22,11 +22,17 @@ nav:
         - Calculate Chance: ./aiming/modules/utilities/calculatechance.md
         - Camera Look At: ./aiming/modules/utilities/cameralookat.md
         - Character: ./aiming/modules/utilities/character.md
+        - Closest Point On Object: ./aiming/modules/utilities/closestpointonobject.md
         - Get Body Parts: ./aiming/modules/utilities/getbodyparts.md
+        - Get Current Camera: ./aiming/modules/utilities/getcurrentcamera.md
+        - Get Players: ./aiming/modules/utilities/getplayers.md
         - Is Part Visible: ./aiming/modules/utilities/ispartvisible.md
         - Raycast: ./aiming/modules/utilities/raycast.md
         - Set Camera CFrame: ./aiming/modules/utilities/setcameracframe.md
+        - Solve Prediction: ./aiming/modules/utilities/solveprediction.md
+        - Solve Projectile Travel Time: ./aiming/modules/utilities/solveprojectiletraveltime.md
         - Team Match: ./aiming/modules/utilities/teammatch.md
+        - Workout Direction: ./aiming/modules/utilities/workoutdirection.md
       - Ignored:
         - Ignore Player: ./aiming/modules/ignored/ignoreplayer.md
         - Ignore Team: ./aiming/modules/ignored/ignoreteam.md
@@ -44,6 +50,8 @@ nav:
         - Aim To B: ./aiming/modules/beziercurve/aimtob.md
         - Manager A: ./aiming/modules/beziercurve/managera.md
         - Manager B: ./aiming/modules/beziercurve/managerb.md
+  - NPC:
+    - Index: ./npc/index.md
   - Beizer Manager:
     - Camera Mode: ./beizermanager/cameramode.md
     - Change Data: ./beizermanager/changedata.md
