@@ -147,6 +147,7 @@ if (Aiming.GUI) then
         title = "Aim Lock",
         icon = 5012544693
     })
+    AimLockPage:setOrderPos(2)
 
     -- //
     local MainSection = AimLockPage:addSection({
