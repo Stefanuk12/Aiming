@@ -192,6 +192,11 @@ local Utilities = {}
 Aiming.Utilities = Utilities
 local GetCurrentCamera
 do
+    -- // You can replace this to make it work with NPCs
+    function Utilities.GetPlayers()
+        return GetPlayers(Players)
+    end
+
     -- // Camera
     function Utilities.GetCurrentCamera()
         return Workspace.CurrentCamera
@@ -681,7 +686,7 @@ function Aiming.GetClosestToCursor(deltaTime)
     end
 
     -- // Loop through all players
-    for _, Player in pairs(GetPlayers(Players)) do
+    for _, Player in pairs(Utilities.GetPlayers()) do
         -- // Get Character
         local Character = Utilities.Character(Player)
 
