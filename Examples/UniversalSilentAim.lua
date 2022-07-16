@@ -94,15 +94,19 @@ local function ValidateArguments(Args, RayMethod)
 end
 
 -- // Checks if a certain method is enabled
+local stringsplit = string.split
+local stringlower = string.lower
+local tablefind = table.find
 local function IsMethodEnabled(Method, Given, PossibleMethods)
     -- // Split it all up
-    PossibleMethods = PossibleMethods or Configuration.Method:split(",")
+    PossibleMethods = PossibleMethods or stringsplit(Configuration.Method, ",")
     Given = Given or Method
 
     -- // Vars
-    local FoundI = table.find(PossibleMethods, Method) or table.find(PossibleMethods, Method:lower()) -- // to cover stuff like target (lowercase)
+    local LoweredMethod = stringlower(Method)
+    local FoundI = tablefind(PossibleMethods, Method) or tablefind(PossibleMethods, LoweredMethod) -- // to cover stuff like target (lowercase)
     local Found = FoundI ~= nil
-    local Matches = Method:lower() == Given:lower()
+    local Matches = LoweredMethod == stringlower(Given)
 
     -- // Return
     return Found and Matches
@@ -221,9 +225,9 @@ __namecall = hookmetamethod(game, "__namecall", function(...)
     local method = getnamecallmethod()
 
     -- // Make sure everything is in order
-    if (self == workspace and not checkcaller() and IsToggled and table.find(Configuration.SupportedMethods.__namecall, method) and AimingChecks.IsAvailable() and Configuration.Enabled and ValidateArguments(args, method)) then
+    if (self == workspace and not checkcaller() and IsToggled and table.find(Configuration.SupportedMethods.__namecall, method) and IsMethodEnabled(method) and AimingChecks.IsAvailable() and Configuration.Enabled and ValidateArguments(args, method)) then
         -- // Raycast
-        if (IsMethodEnabled("Raycast", method)) then
+        if (method == "Raycast") then
             -- // Modify args
             args[3] = CalculateDirection(args[2], AimingSelected.Part.Position, 1000)
 
@@ -232,14 +236,12 @@ __namecall = hookmetamethod(game, "__namecall", function(...)
         end
 
         -- // The rest pretty much, modify args
-        if (IsMethodEnabled(method)) then
-            local Origin = args[2].Origin
-            local Direction = CalculateDirection(Origin, AimingSelected.Part.Position, 1000)
-            args[2] = Ray.new(Origin, Direction)
+        local Origin = args[2].Origin
+        local Direction = CalculateDirection(Origin, AimingSelected.Part.Position, 1000)
+        args[2] = Ray.new(Origin, Direction)
 
-            -- // Return
-            return __namecall(unpack(args))
-        end
+        -- // Return
+        return __namecall(unpack(args))
     end
 
     -- //
