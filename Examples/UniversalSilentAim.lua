@@ -23,7 +23,7 @@ local UserInputService = game:GetService("UserInputService")
 local Configuration = {
     -- // The ones under this you may change - if you are a normal user
     Enabled = true,
-    Method = "FindPartOnRayWithIgnoreList",
+    Method = "Target,Hit",
     FocusMode = false, -- // Stays locked on to that player only. If true then uses the silent aim keybind, if a input type is entered, then that is used
     ToggleBind = false, -- // true = Toggle, false = Hold (to enable)
     Keybind = Enum.UserInputType.MouseButton2, -- // You can also have Enum.KeyCode.E, etc.
@@ -232,12 +232,14 @@ __namecall = hookmetamethod(game, "__namecall", function(...)
         end
 
         -- // The rest pretty much, modify args
-        local Origin = args[2].Origin
-        local Direction = CalculateDirection(Origin, AimingSelected.Part.Position, 1000)
-        args[2] = Ray.new(Origin, Direction)
+        if (IsMethodEnabled(method)) then
+            local Origin = args[2].Origin
+            local Direction = CalculateDirection(Origin, AimingSelected.Part.Position, 1000)
+            args[2] = Ray.new(Origin, Direction)
 
-        -- // Return
-        return __namecall(unpack(args))
+            -- // Return
+            return __namecall(unpack(args))
+        end
     end
 
     -- //
