@@ -133,6 +133,11 @@ local function ToggleMethod(Method, State)
     Configuration.Method = table.concat(EnabledMethods, ",")
 end
 
+-- // Modify the position/cframe, add prediction yourself (use Aiming.Selected)
+function Configuration.ModifyCFrame(OnScreen)
+    return OnScreen and AimingSelected.Position or AimingSelected.Part.CFrame
+end
+
 -- // Focuses a player
 local Backup = {table.unpack(AimingSettingsIgnoredPlayers)}
 function Configuration.FocusPlayer(Player)
@@ -229,7 +234,7 @@ __namecall = hookmetamethod(game, "__namecall", function(...)
         -- // Raycast
         if (method == "Raycast") then
             -- // Modify args
-            args[3] = CalculateDirection(args[2], AimingSelected.Part.Position, 1000)
+            args[3] = CalculateDirection(args[2], Configuration.ModifyCFrame(false).Position, 1000)
 
             -- // Return
             return __namecall(unpack(args))
@@ -262,18 +267,18 @@ __index = hookmetamethod(game, "__index", function(t, k)
 
         -- // Hit
         if (IsMethodEnabled("Hit", k, EnabledMethods)) then
-            return AimingSelected.Part.CFrame
+            return Configuration.ModifyCFrame(false)
         end
 
         -- // X/Y
         if (IsMethodEnabled("X", k, EnabledMethods) or IsMethodEnabled("Y", k, EnabledMethods)) then
-            return AimingSelected.Position[k]
+            return Configuration.ModifyCFrame(true)[k]
         end
 
         -- // UnitRay
         if (IsMethodEnabled("UnitRay", k, EnabledMethods)) then
             local Origin = __index(t, k).Origin
-            local Direction = CalculateDirection(Origin, AimingSelected.Part.Position)
+            local Direction = CalculateDirection(Origin, Configuration.ModifyCFrame(false).Position)
             return Ray.new(Origin, Direction)
         end
     end
