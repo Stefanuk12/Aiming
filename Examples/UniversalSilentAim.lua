@@ -258,25 +258,25 @@ __index = hookmetamethod(game, "__index", function(t, k)
     -- // Make sure everything is in order
     if (t:IsA("Mouse") and not checkcaller() and IsToggled and AimingChecks.IsAvailable() and IsMethodEnabled(k) and Configuration.Enabled) then
         -- // Vars
-        local EnabledMethods = Configuration.Method:split(",")
+        local LoweredK = k:lower()
 
         -- // Target
-        if (IsMethodEnabled("Target", k, EnabledMethods)) then
+        if (LoweredK == "target") then
             return AimingSelected.Part
         end
 
         -- // Hit
-        if (IsMethodEnabled("Hit", k, EnabledMethods)) then
+        if (LoweredK == "hit") then
             return Configuration.ModifyCFrame(false)
         end
 
         -- // X/Y
-        if (IsMethodEnabled("X", k, EnabledMethods) or IsMethodEnabled("Y", k, EnabledMethods)) then
+        if (LoweredK == "x" or LoweredK == "y") then
             return Configuration.ModifyCFrame(true)[k]
         end
 
         -- // UnitRay
-        if (IsMethodEnabled("UnitRay", k, EnabledMethods)) then
+        if (LoweredK == "unitray") then
             local Origin = __index(t, k).Origin
             local Direction = CalculateDirection(Origin, Configuration.ModifyCFrame(false).Position)
             return Ray.new(Origin, Direction)
