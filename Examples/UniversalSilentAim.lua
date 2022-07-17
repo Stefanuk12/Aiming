@@ -70,27 +70,31 @@ local function CalculateDirection(Origin, Destination, Length)
     return (Destination - Origin).Unit * Length
 end
 
--- // Make sure all of the types match up. I don't think I need this because of ArgGuard but added it since the original did
-local function ValidateArguments(Args, RayMethod)
-    -- // Vars
-    local Matches = 0
-    local RayData = Configuration.ExpectedArguments[RayMethod]
+--// Validate arguments passed through namecall
+local function ValidateArguments(Args, Method)
+	--// Get Type Information from Method
 
-    -- // Make sure we have enough args
-    if (#Args < RayData.ArgCountRequired) then
-        return false
-    end
+	local TypeInformation = Configuration.ExpectedArguments[Method]
+	if not TypeInformation then return false end
 
-    -- // Loop through each argument
-    for Pos, Argument in ipairs(Args) do
-        -- // Make sure each argument matches
-        if typeof(Argument) == RayData.Args[Pos] then
-            Matches = Matches + 1
-        end
-    end
+	--// Make new table for successful matches
+	local Matches = 0
 
-    -- // Return success/fail
-    return Matches >= RayData.ArgCountRequired
+	--// Go through every argument passed
+	for ArgumentPosition, Argument in next, Args do
+		--// Check if argument type is a certain type
+		if typeof(Argument) == TypeInformation.Args[ArgumentPosition] then
+			Matches = Matches + 1
+		end
+	end
+
+	--// Get information
+
+	local ExpectedValid = #Args
+	local GotValid = Matches
+
+	--// Return whether or not arguments are valid
+	return ExpectedValid == GotValid
 end
 
 -- // Additional checks you can add yourself, e.g. upvalue checks
