@@ -30,9 +30,56 @@ local Configuration = {
 
     -- // Do not change anything below here - if you are not a normal user
     CurrentlyFocused = nil,
-    SupportedMethods = {
-        __namecall = {"Raycast", "FindPartOnRay", "FindPartOnRayWithWhitelist", "FindPartOnRayWithIgnoreList"},
-        __index = {"Target", "Hit", "X", "Y", "UnitRay"}
+
+    MethodResolve = {
+        -- // __namecall methods
+        raycast = {
+            Real = "Raycast",
+            Metamethod = "__namecall",
+            Aliases = {"raycast"}
+        },
+        findpartonray = {
+            Real = "FindPartOnRay",
+            Metamethod = "__namecall",
+            Aliases = {"findPartOnRay"}
+        },
+        findpartonraywithwhitelist = {
+            Real = "FindPartOnRayWithWhitelist",
+            Metamethod = "__namecall",
+            Aliases = {"findPartOnRayWithWhitelist"}
+        },
+        findpartonraywithignorelist = {
+            Real = "FindPartOnRayWithIgnoreList",
+            Metamethod = "__namecall",
+            Aliases = {"findPartOnRayWithIgnoreList"}
+        },
+
+        -- // __index methods
+        target = {
+            Real = "Target",
+            Metamethod = "__index",
+            Aliases = {"target"}
+        },
+        hit = {
+            Real = "Hit",
+            Metamethod = "__index",
+            Aliases = {"hit"}
+        },
+        x = {
+            Real = "X",
+            Metamethod = "__index",
+            Aliases = {"x"}
+        },
+        y = {
+            Real = "Y",
+            Metamethod = "__index",
+            Aliases = {"y"}
+        },
+        unitray = {
+            Real = "UnitRay",
+            Metamethod = "__index",
+            Aliases = {"unitray"}
+        },
     },
 
     ExpectedArguments = {
@@ -70,30 +117,30 @@ local function CalculateDirection(Origin, Destination, Length)
     return (Destination - Origin).Unit * Length
 end
 
---// Validate arguments passed through namecall
+-- // Validate arguments passed through namecall
 local function ValidateArguments(Args, Method)
 	--// Get Type Information from Method
-
 	local TypeInformation = Configuration.ExpectedArguments[Method]
-	if not TypeInformation then return false end
+	if (not TypeInformation) then
+        return false
+    end
 
 	--// Make new table for successful matches
 	local Matches = 0
 
-	--// Go through every argument passed
-	for ArgumentPosition, Argument in next, Args do
-		--// Check if argument type is a certain type
-		if typeof(Argument) == TypeInformation.Args[ArgumentPosition] then
+	-- // Go through every argument passed
+	for ArgumentPosition, Argument in pairs(Args) do
+		-- // Check if argument type is a certain type
+		if (typeof(Argument) == TypeInformation.Args[ArgumentPosition]) then
 			Matches = Matches + 1
 		end
 	end
 
-	--// Get information
-
+	-- // Get information
 	local ExpectedValid = #Args
 	local GotValid = Matches
 
-	--// Return whether or not arguments are valid
+	-- // Return whether or not arguments are valid
 	return ExpectedValid == GotValid
 end
 
@@ -113,12 +160,18 @@ local function IsMethodEnabled(Method, Given, PossibleMethods)
 
     -- // Vars
     local LoweredMethod = stringlower(Method)
-    local FoundI = tablefind(PossibleMethods, Method) or tablefind(PossibleMethods, LoweredMethod) -- // to cover stuff like target (lowercase)
-    local Found = FoundI ~= nil
+    local MethodData = Configuration.MethodResolve[LoweredMethod]
+    if (not MethodData) then
+        return false, nil
+    end
+
+    -- //
     local Matches = LoweredMethod == stringlower(Given)
+    local RealMethod = MethodData.Real
+    local Found = tablefind(PossibleMethods, RealMethod)
 
     -- // Return
-    return Found and Matches
+    return (Matches and Found), RealMethod
 end
 
 -- // Allows you to easily toggle multiple methods on and off
@@ -240,9 +293,17 @@ __namecall = hookmetamethod(game, "__namecall", function(...)
     local callingscript = getcallingscript()
 
     -- // Make sure everything is in order
-    if (self == workspace and not checkcaller() and IsToggled and table.find(Configuration.SupportedMethods.__namecall, method) and IsMethodEnabled(method) and AimingChecks.IsAvailable() and Configuration.Enabled and ValidateArguments(args, method) and Configuration.AdditionalCheck("__namecall", method, callingscript, ...)) then
+    if (self == workspace and not checkcaller() and IsToggled and Configuration.Enabled and AimingChecks.IsAvailable()) then
+        -- // Vars
+        local MethodEnabled, RealMethod = IsMethodEnabled(method)
+
+        -- // Make sure all is in order 2
+        if not (MethodEnabled and ValidateArguments(args, RealMethod) and Configuration.AdditionalCheck("__namecall", RealMethod, callingscript, ...)) then
+            return __namecall(...)
+        end
+
         -- // Raycast
-        if (method == "Raycast") then
+        if (RealMethod == "Raycast") then
             -- // Modify args
             args[3] = CalculateDirection(args[2], Configuration.ModifyCFrame(false).Position, 1000)
 
@@ -269,27 +330,32 @@ __index = hookmetamethod(game, "__index", function(t, k)
     local callingscript = getcallingscript()
 
     -- // Make sure everything is in order
-    if (t:IsA("Mouse") and not checkcaller() and IsToggled and AimingChecks.IsAvailable() and IsMethodEnabled(k) and Configuration.Enabled and Configuration.AdditionalCheck("__index", nil, callingscript, t, k)) then
+    if (t:IsA("Mouse") and not checkcaller() and IsToggled and Configuration.Enabled and AimingChecks.IsAvailable()) then
         -- // Vars
-        local LoweredK = k:lower()
+        local MethodEnabled, RealMethod = IsMethodEnabled(k)
+
+        -- // Make sure everything is in order 2
+        if not (MethodEnabled and Configuration.AdditionalCheck("__index", nil, callingscript, t, RealMethod)) then
+            return __index(t, k)
+        end
 
         -- // Target
-        if (LoweredK == "target") then
+        if (RealMethod == "Target") then
             return AimingSelected.Part
         end
 
         -- // Hit
-        if (LoweredK == "hit") then
+        if (RealMethod == "Hit") then
             return Configuration.ModifyCFrame(false)
         end
 
         -- // X/Y
-        if (LoweredK == "x" or LoweredK == "y") then
+        if (RealMethod == "X" or RealMethod == "Y") then
             return Configuration.ModifyCFrame(true)[k]
         end
 
         -- // UnitRay
-        if (LoweredK == "unitray") then
+        if (RealMethod == "UnitRay") then
             local Origin = __index(t, k).Origin
             local Direction = CalculateDirection(Origin, Configuration.ModifyCFrame(false).Position)
             return Ray.new(Origin, Direction)
@@ -356,21 +422,12 @@ local SilentAimMethodsSection = AimingPage:addSection({
     title = "Silent Aim: Methods"
 })
 
-for _, method in ipairs(Configuration.SupportedMethods.__index) do
+for _, method in pairs(Configuration.MethodResolve) do
     SilentAimMethodsSection:addToggle({
-        title = method,
-        default = IsMethodEnabled(method),
+        title = method.Real,
+        default = IsMethodEnabled(method.Real),
         callback = function(value)
-            Configuration.ToggleMethod(method, value)
-        end
-    })
-end
-for _, method in ipairs(Configuration.SupportedMethods.__namecall) do
-    SilentAimMethodsSection:addToggle({
-        title = method,
-        default = IsMethodEnabled(method),
-        callback = function(value)
-            Configuration.ToggleMethod(method, value)
+            Configuration.ToggleMethod(method.Real, value)
         end
     })
 end
