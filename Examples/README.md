@@ -3,3 +3,4 @@ This was inspired by [this project](https://github.com/Averiias/Universal-Silent
 
 ### Tested Games
 * [Da Hood](https://www.roblox.com/games/2788229376/) (`Hit`)
+* [Prison Life](https://www.roblox.com/games/155615604/) (`Hit,Target,FindPartOnRay`)

@@ -23,7 +23,7 @@ local UserInputService = game:GetService("UserInputService")
 local Configuration = {
     -- // The ones under this you may change - if you are a normal user
     Enabled = true,
-    Method = "Target,Hit",
+    Method = "FindPartOnRay",
     FocusMode = false, -- // Stays locked on to that player only. If true then uses the silent aim keybind, if a input type is entered, then that is used
     ToggleBind = false, -- // true = Toggle, false = Hold (to enable)
     Keybind = Enum.UserInputType.MouseButton2, -- // You can also have Enum.KeyCode.E, etc.
@@ -284,46 +284,6 @@ UserInputService.InputEnded:Connect(function(Input, GameProcessedEvent)
 end)
 
 -- // Hooks
-local __namecall
-__namecall = hookmetamethod(game, "__namecall", function(...)
-    -- // Vars
-    local args = {...}
-    local self = args[1]
-    local method = getnamecallmethod()
-    local callingscript = getcallingscript()
-
-    -- // Make sure everything is in order
-    if (self == workspace and not checkcaller() and IsToggled and Configuration.Enabled and AimingChecks.IsAvailable()) then
-        -- // Vars
-        local MethodEnabled, RealMethod = IsMethodEnabled(method)
-
-        -- // Make sure all is in order 2
-        if not (MethodEnabled and ValidateArguments(args, RealMethod) and Configuration.AdditionalCheck("__namecall", RealMethod, callingscript, ...)) then
-            return __namecall(...)
-        end
-
-        -- // Raycast
-        if (RealMethod == "Raycast") then
-            -- // Modify args
-            args[3] = CalculateDirection(args[2], Configuration.ModifyCFrame(false).Position, 1000)
-
-            -- // Return
-            return __namecall(unpack(args))
-        end
-
-        -- // The rest pretty much, modify args
-        local Origin = args[2].Origin
-        local Direction = CalculateDirection(Origin, AimingSelected.Part.Position, 1000)
-        args[2] = Ray.new(Origin, Direction)
-
-        -- // Return
-        return __namecall(unpack(args))
-    end
-
-    -- //
-    return __namecall(...)
-end)
-
 local __index
 __index = hookmetamethod(game, "__index", function(t, k)
     -- // Vars
@@ -365,6 +325,47 @@ __index = hookmetamethod(game, "__index", function(t, k)
     -- // Return
     return __index(t, k)
 end)
+
+local __namecall
+__namecall = hookmetamethod(game, "__namecall", function(...)
+    -- // Vars
+    local args = {...}
+    local self = args[1]
+    local method = getnamecallmethod()
+    local callingscript = getcallingscript()
+
+    -- // Make sure everything is in order
+    if (self == workspace and not checkcaller() and IsToggled and Configuration.Enabled and AimingChecks.IsAvailable()) then
+        -- // Vars
+        local MethodEnabled, RealMethod = IsMethodEnabled(method)
+
+        -- // Make sure all is in order 2
+        if not (MethodEnabled and ValidateArguments(args, RealMethod) and Configuration.AdditionalCheck("__namecall", RealMethod, callingscript, ...)) then
+            return __namecall(...)
+        end
+
+        -- // Raycast
+        if (RealMethod == "Raycast") then
+            -- // Modify args
+            args[3] = CalculateDirection(args[2], Configuration.ModifyCFrame(false).Position, 1000)
+
+            -- // Return
+            return __namecall(unpack(args))
+        end
+
+        -- // The rest pretty much, modify args
+        local Origin = args[2].Origin
+        local Direction = CalculateDirection(Origin, __index(AimingSelected.Part, "Position"), 1000)
+        args[2] = Ray.new(Origin, Direction)
+
+        -- // Return
+        return __namecall(unpack(args))
+    end
+
+    -- //
+    return __namecall(...)
+end)
+
 
 -- // GUI
 local SilentAimSection = AimingPage:addSection({
