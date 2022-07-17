@@ -93,6 +93,11 @@ local function ValidateArguments(Args, RayMethod)
     return Matches >= RayData.ArgCountRequired
 end
 
+-- // Additional checks you can add yourself, e.g. upvalue checks
+function Configuration.AdditionalCheck(metamethod, method, callingscript, ...)
+    return true
+end
+
 -- // Checks if a certain method is enabled
 local stringsplit = string.split
 local stringlower = string.lower
@@ -113,7 +118,7 @@ local function IsMethodEnabled(Method, Given, PossibleMethods)
 end
 
 -- // Allows you to easily toggle multiple methods on and off
-local function ToggleMethod(Method, State)
+function Configuration.ToggleMethod(Method, State)
     -- // Vars
     local EnabledMethods = Configuration.Method:split(",")
     local FoundI = table.find(EnabledMethods, Method)
@@ -228,9 +233,10 @@ __namecall = hookmetamethod(game, "__namecall", function(...)
     local args = {...}
     local self = args[1]
     local method = getnamecallmethod()
+    local callingscript = getcallingscript()
 
     -- // Make sure everything is in order
-    if (self == workspace and not checkcaller() and IsToggled and table.find(Configuration.SupportedMethods.__namecall, method) and IsMethodEnabled(method) and AimingChecks.IsAvailable() and Configuration.Enabled and ValidateArguments(args, method)) then
+    if (self == workspace and not checkcaller() and IsToggled and table.find(Configuration.SupportedMethods.__namecall, method) and IsMethodEnabled(method) and AimingChecks.IsAvailable() and Configuration.Enabled and ValidateArguments(args, method) and Configuration.AdditionalCheck("__namecall", method, callingscript, ...)) then
         -- // Raycast
         if (method == "Raycast") then
             -- // Modify args
@@ -255,8 +261,11 @@ end)
 
 local __index
 __index = hookmetamethod(game, "__index", function(t, k)
+    -- // Vars
+    local callingscript = getcallingscript()
+
     -- // Make sure everything is in order
-    if (t:IsA("Mouse") and not checkcaller() and IsToggled and AimingChecks.IsAvailable() and IsMethodEnabled(k) and Configuration.Enabled) then
+    if (t:IsA("Mouse") and not checkcaller() and IsToggled and AimingChecks.IsAvailable() and IsMethodEnabled(k) and Configuration.Enabled and Configuration.AdditionalCheck("__index", nil, callingscript, t, k)) then
         -- // Vars
         local LoweredK = k:lower()
 
@@ -348,7 +357,7 @@ for _, method in ipairs(Configuration.SupportedMethods.__index) do
         title = method,
         default = IsMethodEnabled(method),
         callback = function(value)
-            ToggleMethod(method, value)
+            Configuration.ToggleMethod(method, value)
         end
     })
 end
@@ -357,7 +366,7 @@ for _, method in ipairs(Configuration.SupportedMethods.__namecall) do
         title = method,
         default = IsMethodEnabled(method),
         callback = function(value)
-            ToggleMethod(method, value)
+            Configuration.ToggleMethod(method, value)
         end
     })
 end
