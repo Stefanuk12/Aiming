@@ -20,11 +20,11 @@ local AimingUtilities = Aiming.Utilities
 function AimingChecks.Custom(Player)
     -- // Check if downed
     local Character = AimingUtilities.Character(Player)
-    local KOd = Character:WaitForChild("BodyEffects")["K.O"].Value
+    local KOd = Character:WaitForChild("BodyEffects"):FindFirstChild("K.O")
     local Grabbed = Character:FindFirstChild("GRABBING_CONSTRAINT") ~= nil
 
     -- // Check B
-    if (KOd or Grabbed) then
+    if ((KOd and KOd.Value) or Grabbed) then
         return false
     end
 
