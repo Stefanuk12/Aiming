@@ -66,12 +66,7 @@ local AimingSettings = {
             Teams = false
         },
 
-        Teams = {
-            {
-                Team = LocalPlayer.Team,
-                TeamColor = LocalPlayer.TeamColor,
-            },
-        },
+        Teams = {},
         IgnoreLocalTeam = true,
 
         Players = {
