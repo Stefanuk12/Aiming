@@ -76,6 +76,7 @@ local AimingSettings = {
     }
 }
 local Aiming = {
+    Loaded = false,
     ShowCredits = true,
     Settings = AimingSettings,
 
@@ -788,6 +789,8 @@ Heartbeat:Connect(function(deltaTime)
     Aiming.UpdateFOV()
     Aiming.UpdateTracer()
     Aiming.GetClosestToCursor(deltaTime)
+
+    Aiming.Loaded = true
 end)
 
 task.delay(1, function()

@@ -1,6 +1,12 @@
 -- // Dependencies
 local Venyx = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Venyx-UI-Library/main/source2.lua"))()
-local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/Load.lua"))()()
+
+local Aiming = getgenv().Aiming
+if (not Aiming) then
+    Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/Load.lua"))()()
+end
+repeat wait() until Aiming.Loaded
+
 local AimingSettings = Aiming.Settings
 local AimingUtilities = Aiming.Utilities
 
