@@ -10,18 +10,25 @@ local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefan
 -- // Services
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- // Vars
 local CurrentCamera = Workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 local MapFolder = Workspace.MapFolder
 local GameStats = MapFolder.GameStats
+local Characters = debug.getupvalue(getsenv(ReplicatedStorage.BAC.Characters).NewChar, 1)
 
 -- //
 local AimingIgnored = Aiming.Ignored
 local AimingSettings = Aiming.Settings
 local AimingUtilities = Aiming.Utilities
 AimingSettings.TargetPart = {"HumanoidRootPart", "Head", "LowerTorso", "UpperTorso"}
+
+-- // Character
+function AimingUtilities.Character(Player)
+    return Characters[Player]
+end
 
 -- // Team Check
 function AimingIgnored.IsIgnoredTeam(Player)
@@ -31,7 +38,7 @@ function AimingIgnored.IsIgnoredTeam(Player)
     end
 
     -- //
-    return (LocalPlayer.PermanentTeam.Value == Player.PermanentTeam.Value)
+    return (LocalPlayer.SelectedTeam.Value == Player.SelectedTeam.Value)
 end
 
 -- // Ignore
