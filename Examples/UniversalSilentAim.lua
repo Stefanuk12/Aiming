@@ -8,7 +8,7 @@
 ]]
 
 -- // Dependencies
-local _, AimingPage, _ = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/GUI.lua"))()
+local Library, AimingTab, _ = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/GUI.lua"))()
 local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/Load.lua"))()("Module")
 local AimingChecks = Aiming.Checks
 local AimingSelected = Aiming.Selected
@@ -368,67 +368,79 @@ end)
 
 
 -- // GUI
-local SilentAimSection = AimingPage:addSection({
-    title = "Silent Aim"
-})
+local SilentAimGroupBox = AimingTab:AddLeftTabbox("Silent Aim")
+local MainTab = SilentAimGroupBox:AddTab("Main")
+local MethodsTab = SilentAimGroupBox:AddTab("Methods")
 
-SilentAimSection:addToggle({
-    title = "Enabled",
-    default = Configuration.Enabled,
-    callback = function(value)
-        Configuration.Enabled = value
+MainTab:AddToggle("SilentAimEnabled", {
+    Text = "Enabled",
+    Default = Configuration.Enabled,
+    Tooltip = "Toggle the Silent Aim on and off",
+    Callback = function(Value)
+        Configuration.Enabled = Value
+    end
+}):AddKeyPicker("SilentAimEnabledKey", {
+    Default = Configuration.Keybind,
+    SyncToggleState = false,
+    Mode = Configuration.ToggleBind and "Toggle" or "Hold",
+    Text = "Silent Aim",
+    NoUI = false,
+    ChangedCallback = function(Key)
+        Configuration.Keybind = Key
+    end
+})
+MainTab:AddToggle("SilentAimEnabledToggle", {
+    Text = "Toggle Mode",
+    Default = Configuration.ToggleBind,
+    Tooltip = "When disabled, it is hold to activate.",
+    Callback = function(Value)
+        Configuration.ToggleBind = Value
+
+        Options.SilentAimEnabledKey.Mode = Value and "Toggle" or "Hold"
+        Options.SilentAimEnabledKey:Update()
     end
 })
 
-SilentAimSection:addToggle({
-    title = "Focus Mode",
-    default = Configuration.FocusMode,
-    callback = function(value)
-        Configuration.FocusMode = value
+MainTab:AddToggle("SilentAimFocusMode", {
+    Text = "Focus Mode",
+    Default = Configuration.Enabled,
+    Tooltip = "Only targets the current targetted player",
+    Callback = function(Value)
+        Configuration.FocusMode = Value
     end
-})
-
-SilentAimSection:addToggle({
-    title = "Toggle Bind",
-    default = Configuration.ToggleBind,
-    callback = function(value)
-        Configuration.ToggleBind = value
-    end
-})
-
-SilentAimSection:addKeybind({
-    title = "Keybind",
-    default = Configuration.Keybind,
-    changedCallback = function(value)
-        Configuration.Keybind = value
-    end
-})
-
-SilentAimSection:addToggle({
-    title = "Focus Mode (Uses Keybind)",
-    default = Configuration.FocusMode,
-    callback = function(value)
-        Configuration.FocusMode = value
-    end
-})
-SilentAimSection:addKeybind({
-    title = "Focus Mode (Custom Bind)",
-    changedCallback = function(value)
-        Configuration.FocusMode = value
+}):AddKeyPicker("SilentAimFocusModeKey", {
+    Default = Configuration.Keybind,
+    SyncToggleState = false,
+    Text = "Focus Mode",
+    NoUI = false,
+    ChangedCallback = function(Key)
+        Configuration.FocusMode = Key
     end
 })
 
 -- // Adding each method
-local SilentAimMethodsSection = AimingPage:addSection({
-    title = "Silent Aim: Methods"
+local Methods = {}
+for _, method in pairs(Configuration.MethodResolve) do
+    table.insert(Methods, method.Real)
+end
+
+-- //
+local function GetDictKeys(Dictionary)
+    local Keys = {}
+    for key, _ in pairs(Dictionary) do
+        table.insert(Keys, key)
+    end
+    return Keys
+end
+MethodsTab:AddDropdown("SilentAimMethods", {
+    Values = Methods,
+    Default = Configuration.Method:split(","),
+    Multi = true,
+    Text = "Methods",
+    Tooltip = "The possible silent aim methods to enable",
+    Callback = function(Value)
+        Configuration.Method = table.concat(GetDictKeys(Value), ",")
+    end
 })
 
-for _, method in pairs(Configuration.MethodResolve) do
-    SilentAimMethodsSection:addToggle({
-        title = method.Real,
-        default = IsMethodEnabled(method.Real),
-        callback = function(value)
-            Configuration.ToggleMethod(method.Real, value)
-        end
-    })
-end
+Library.KeybindFrame.Visible = true;

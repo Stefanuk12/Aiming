@@ -137,8 +137,8 @@ RunService:BindToRenderStep("AimLockAiming", 0, function()
     end
 end)
 
--- // Check if GUI exists
-if (Aiming.GUI) then
+-- // Check if GUI exists (for Venyx)
+if (Aiming.GUI and false) then
     -- // Vars
     local UI = Aiming.GUI[1]
 
@@ -273,6 +273,145 @@ if (Aiming.GUI) then
     })
 
     AddCurvePointSliders(BeizerB, "B")
+end
+
+-- // Check if GUI exists (for Linoria)
+if (Aiming.GUI) then
+    -- // Vars
+    local AimingTab = Aiming.GUI[2]
+
+    -- //
+    local AimLockGroupBox = AimingTab:AddRightTabbox("Aim Lock")
+    local MainTab = AimLockGroupBox:AddTab("Main")
+    local MouseTab = AimLockGroupBox:AddTab("Mouse")
+    local CameraTab = AimLockGroupBox:AddTab("Camera")
+
+    -- //
+    MainTab:AddToggle("AimLockEnabled", {
+        Text = "Enabled",
+        Default = Settings.Enabled,
+        Tooltip = "Toggle the Aim Lock on and off",
+        Callback = function(Value)
+            Settings.Enabled = Value
+        end
+    }):AddKeyPicker("AimLockEnabledKey", {
+        Default = Settings.Keybind,
+        SyncToggleState = false,
+        Mode = Settings.ToggleBind and "Toggle" or "Hold",
+        Text = "Aim Lock",
+        NoUI = false,
+        ChangedCallback = function(Key)
+            Settings.Keybind = Key
+        end
+    })
+    MainTab:AddToggle("AimLockEnabledToggle", {
+        Text = "Toggle Mode",
+        Default = Settings.ToggleBind,
+        Tooltip = "When disabled, it is hold to activate.",
+        Callback = function(Value)
+            Settings.ToggleBind = Value
+
+            Options.AimLockEnabledKey.Mode = Value and "Toggle" or "Hold"
+            Options.AimLockEnabledKey:Update()
+        end
+    })
+
+    MainTab:AddToggle("AimLockFocusMode", {
+        Text = "Enabled",
+        Default = Settings.Enabled,
+        Tooltip = "Only targets the current targetted player",
+        Callback = function(Value)
+            Settings.FocusMode = Value
+        end
+    }):AddKeyPicker("AimLockFocusModeKey", {
+        Default = Settings.Keybind,
+        SyncToggleState = false,
+        Text = "Focus Mode",
+        NoUI = false,
+        ChangedCallback = function(Key)
+            Settings.FocusMode = Key
+        end
+    })
+
+    -- //
+    MouseTab:AddSlider("AimLockMouseSmoothness", {
+        Text = "Smoothness",
+        Tooltip = "How smooth and fast the Mouse lock is",
+        Default = BeizerCurve.ManagerA.Smoothness,
+        Min = 0,
+        Max = 1,
+        Rounding = 4,
+        Callback = function(Value)
+            BeizerCurve.ManagerA.Smoothness = Value
+        end
+    })
+
+    MouseTab:AddToggle("AimLockMouseDrawPath", {
+        Text = "Draw Path",
+        Default = BeizerCurve.ManagerA.DrawPath,
+        Tooltip = "Draw the aim curve when activated",
+        Callback = function(Value)
+            BeizerCurve.ManagerA.DrawPath = Value
+        end
+    })
+
+    local function AddCurvePointSliders(Tab, ManagerName)
+        -- // Vars
+        local CurvePoints = BeizerCurve["Manager" .. ManagerName].CurvePoints
+
+        -- //
+        local function AddSliderXY(i)
+            -- // Vars
+            local PointName = "Point " .. (i == 1 and "A" or "B")
+            local PointNumber = i == 1 and "first" or "second"
+
+            -- // X Slider
+            Tab:AddSlider("AimingCurvePointX" .. tostring(i), {
+                Text = PointName .. ": X",
+                Tooltip = "The X position of the " .. PointNumber .. " point",
+                Default = CurvePoints[i].X,
+                Min = 0,
+                Max = 1,
+                Rounding = 2,
+                Callback = function(Value)
+                    CurvePoints[i] = Vector2.new(Value, CurvePoints[i].Y)
+                end
+            })
+
+            -- // Y Slider
+            Tab:AddSlider("AimingCurvePointY" .. tostring(i), {
+                Text = PointName .. ": Y",
+                Tooltip = "The Y position of the " .. PointNumber .. " point",
+                Default = CurvePoints[i].Y,
+                Min = 0,
+                Max = 1,
+                Rounding = 2,
+                Callback = function(Value)
+                    CurvePoints[i] = Vector2.new(CurvePoints[i].X, Value)
+                end
+            })
+        end
+
+        AddSliderXY(1)
+        AddSliderXY(2)
+    end
+
+    AddCurvePointSliders(MouseTab, "A")
+
+    -- //
+    CameraTab:AddSlider("AimLockCameraSmoothness", {
+        Text = "Smoothness",
+        Tooltip = "How smooth and fast the Camera lock is",
+        Default = BeizerCurve.ManagerB.Smoothness,
+        Min = 0,
+        Max = 1,
+        Rounding = 4,
+        Callback = function(Value)
+            BeizerCurve.ManagerB.Smoothness = Value
+        end
+    })
+
+    AddCurvePointSliders(CameraTab, "B")
 end
 
 -- //

@@ -1,5 +1,8 @@
 -- // Dependencies
-local Venyx = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Venyx-UI-Library/main/source2.lua"))()
+local LinoriaRepo = "https://raw.githubusercontent.com/Stefanuk12/LinoriaLib/main/"
+local Library = loadstring(game:HttpGet(LinoriaRepo .. "Library.lua"))()
+local ThemeManager = loadstring(game:HttpGet(LinoriaRepo .. "addons/ThemeManager.lua"))()
+local SaveManager = loadstring(game:HttpGet(LinoriaRepo .. "addons/SaveManager.lua"))()
 
 local Aiming = getgenv().Aiming
 if (not Aiming) then
@@ -15,500 +18,345 @@ local Players = game:GetService("Players")
 local Teams = game:GetService("Teams")
 
 -- // Initialising the UI
-local UI = Venyx.new({
-    title = "Venyx"
+local Window = Library:CreateWindow({
+    Title = "epic hax",
+    Center = true,
+    AutoShow = true
 })
-
--- // Themes
-local Themes = {
-    Background = Color3.fromRGB(24, 24, 24),
-    Glow = Color3.fromRGB(0, 0, 0),
-    Accent = Color3.fromRGB(10, 10, 10),
-    LightContrast = Color3.fromRGB(20, 20, 20),
-    DarkContrast = Color3.fromRGB(14, 14, 14),
-    TextColor = Color3.fromRGB(255, 255, 255)
-}
-
--- // Aiming Page
-local AimingPage = UI:addPage({
-    title = "Aiming",
-    icon = 5012544693
-})
-
--- // Sections for Aiming Page
-local MainSection = AimingPage:addSection({
-    title = "Main"
-})
-
--- // Aiming UI Elements
-MainSection:addToggle({
-    title = "Enabled",
-    default = AimingSettings.Enabled,
-    callback = function(value)
-        AimingSettings.Enabled = value
-    end
-})
-
-MainSection:addToggle({
-    title = "Visible Check",
-    default = AimingSettings.VisibleCheck,
-    callback = function(value)
-        AimingSettings.VisibleCheck = value
-    end
-})
-
-MainSection:addSlider({
-    title = "Hit Chance",
-    default = AimingSettings.HitChance,
-    min = 0,
-    max = 100,
-    callback = function(value)
-        AimingSettings.HitChance = value
-    end
-})
-
--- // Target Part Section for Aiming Page
-local TargetPartSection = AimingPage:addSection({
-    title = "Target Part Management"
-})
-
-local TargetPartInputDrop = TargetPartSection:addDropdown({
-    title = "Select Target Part",
-    list = AimingSettings.TargetPart,
-    default = AimingSettings.TargetPart[1],
-    callback = function() end
-})
-
-TargetPartSection:addButton({
-    title = "Add",
-    callback = function()
-        -- // Vars
-        local TargetPart = TargetPartInputDrop.Options.title
-
-        -- // Make sure does not exist already
-        local TargetPartI = table.find(AimingSettings.TargetPart, TargetPart)
-        if (TargetPartI) then
-            return UI:Notify({
-                title = "Aiming: Target Part",
-                context = "Already added"
-            })
-        end
-
-        -- // Add
-        table.insert(AimingSettings.TargetPart, TargetPart)
-
-        -- // Update dropdown
-        TargetPartInputDrop.Options:Update({
-            list = AimingSettings.TargetPart
-        })
-    end
-})
-TargetPartSection:addButton({
-    title = "Remove",
-    callback = function()
-        -- // Vars
-        local TargetPart = TargetPartInputDrop.Options.title
-
-        -- // Make sure does exist already
-        local TargetPartI = table.find(AimingSettings.TargetPart, TargetPart)
-        if (not TargetPartI) then
-            return UI:Notify({
-                title = "Aiming: Target Part",
-                context = "Not already added"
-            })
-        end
-
-        -- // Add
-        table.remove(AimingSettings.TargetPart, TargetPartI)
-
-        -- // Update dropdown
-        TargetPartInputDrop.Options:Update({
-            list = AimingSettings.TargetPart
-        })
-    end
-})
-
--- // Target Part Section for Aiming Page
-local TargetPartCharacterSection = AimingPage:addSection({
-    title = "Target Part (Character): Management"
-})
-
--- // Get some parts
-local function GetCharacterParts()
-    -- // Vars
-    local Parts = {}
-
-    -- // Loop through Players
-    for _, Player in ipairs(Players:GetPlayers()) do
-        -- // Attempt to get their character
-        local Character = AimingUtilities.Character(Player)
-        if (not Character) then
-            continue
-        end
-
-        -- //
-        local CharacterParts = AimingUtilities.GetBodyParts(Character)
-        if (#CharacterParts > 0) then
-            Parts = CharacterParts
-            break
-        end
-    end
-
-    -- // Return
-    return Parts
-end
 
 -- //
-local CharacterParts = AimingUtilities.ArrayToString(GetCharacterParts())
-local TargetPartCharacterInput = TargetPartCharacterSection:addDropdown({
-    title = "Select Target Part",
-    list = CharacterParts,
-    callback = function() end
-})
-
-TargetPartCharacterSection:addButton({
-    title = "Add",
-    callback = function()
+local AimingTab = Window:AddTab("Aiming")
+do
+    -- // Get some parts
+    local function GetCharacterParts()
         -- // Vars
-        local TargetPart = TargetPartCharacterInput.Options.title
+        local Parts = {}
+
+        -- // Loop through Players
+        for _, Player in ipairs(Players:GetPlayers()) do
+            -- // Attempt to get their character
+            local Character = AimingUtilities.Character(Player)
+            if (not Character) then
+                continue
+            end
+
+            -- //
+            local CharacterParts = AimingUtilities.GetBodyParts(Character)
+            if (#CharacterParts > 0) then
+                Parts = CharacterParts
+                break
+            end
+        end
+
+        -- // Return
+        return Parts
+    end
+
+    -- //
+    local UniversalGroupBox = AimingTab:AddLeftGroupbox("Universal")
+    UniversalGroupBox:AddToggle("AimingEnabled", {
+        Text = "Enabled",
+        Default = AimingSettings.Enabled,
+        Tooltip = "Toggle the entirety of Aiming on and off",
+        Callback = function(Value)
+            AimingSettings.Enabled = Value
+        end
+    })
+    UniversalGroupBox:AddToggle("AimingVisibleCheck", {
+        Text = "Visibility Check",
+        Default = AimingSettings.VisibleCheck,
+        Tooltip = "Makes sure targets are within LoS",
+        Callback = function(Value)
+            AimingSettings.VisibleCheck = Value
+        end
+    })
+    UniversalGroupBox:AddSlider("AimingHitChance", {
+        Text = "Hit Chance%",
+        Tooltip = "The likelyhood of Aiming 'working'",
+        Default = AimingSettings.HitChance,
+        Min = 0,
+        Max = 100,
+        Rounding = 1,
+        Callback = function(Value)
+            AimingSettings.HitChance = Value
+        end
+    })
+
+    -- //
+    local TargetPartBox = AimingTab:AddRightTabbox()
+    local TargetPartSelected = TargetPartBox:AddTab("Selected")
+    local TargetPartSelection = TargetPartBox:AddTab("Selection")
+
+    -- //
+    local TargetPartA = TargetPartSelected:AddDropdown("AimingTargetPartSelected", {
+        Values = AimingSettings.TargetPart,
+        Default = 1,
+        Multi = false,
+        Text = "Select Target Part",
+        Tooltip = "These are the currently selected parts"
+    })
+    TargetPartSelected:AddButton("Add", function()
+        -- // Vars
+        local TargetPart = TargetPartA.Value
 
         -- // Make sure does not exist already
         local TargetPartI = table.find(AimingSettings.TargetPart, TargetPart)
         if (TargetPartI) then
-            return UI:Notify({
-                title = "Aiming: Target Part",
-                context = "Already added"
-            })
+            return Library:Notify("Already added", 3)
         end
 
         -- // Add
-        table.insert(AimingSettings.TargetPart, TargetPart)
+        table.insert(AimingSettings.TargetPart, TargetPartI)
 
         -- // Update dropdown
-        TargetPartInputDrop.Options:Update({
-            list = AimingSettings.TargetPart
-        })
-    end
-})
-TargetPartCharacterSection:addButton({
-    title = "Remove",
-    callback = function()
+        TargetPartA.Values = AimingSettings.TargetPart
+        TargetPartA:SetValues()
+    end):AddButton("Remove", function()
         -- // Vars
-        local TargetPart = TargetPartCharacterInput.Options.title
+        local TargetPart = TargetPartA.Value
 
         -- // Make sure does exist already
         local TargetPartI = table.find(AimingSettings.TargetPart, TargetPart)
         if (not TargetPartI) then
-            return UI:Notify({
-                title = "Aiming: Target Part",
-                context = "Not already added"
-            })
+            return Library:Notify("Not already added", 3)
         end
 
         -- // Add
         table.remove(AimingSettings.TargetPart, TargetPartI)
 
         -- // Update dropdown
-        TargetPartInputDrop.Options:Update({
-            list = AimingSettings.TargetPart
-        })
-    end
-})
+        TargetPartA.Values = AimingSettings.TargetPart
+        TargetPartA:SetValues()
+    end)
 
--- // FOV Section for Aiming Page
-local FOVSettingsSection = AimingPage:addSection({
-    title = "FOV Management"
-})
-
-FOVSettingsSection:addToggle({
-    title = "Enabled",
-    default = AimingSettings.FOVSettings.Enabled,
-    callback = function(value)
-        AimingSettings.FOVSettings.Enabled = value
-    end
-})
-
-FOVSettingsSection:addSlider({
-    title = "Scale",
-    default = AimingSettings.FOVSettings.Scale,
-    min = 0,
-    max = 360,
-    callback = function(value)
-        AimingSettings.FOVSettings.Scale = value
-    end
-})
-
-FOVSettingsSection:addSlider({
-    title = "Sides",
-    default = AimingSettings.FOVSettings.Sides,
-    min = 3,
-    max = 55,
-    callback = function(value)
-        AimingSettings.FOVSettings.Sides = value
-    end
-})
-
-FOVSettingsSection:addColorPicker({
-    title = "Colour",
-    default = AimingSettings.FOVSettings.Colour,
-    callback = function(value)
-        AimingSettings.FOVSettings.Colour = value
-    end
-})
-
--- // Tracer Section for Aiming Page
-local TracerSettingsSection = AimingPage:addSection({
-    title = "Tracer Management"
-})
-
-TracerSettingsSection:addToggle({
-    title = "Enabled",
-    default = AimingSettings.TracerSettings.Enabled,
-    callback = function(value)
-        AimingSettings.TracerSettings.Enabled = value
-    end
-})
-
-TracerSettingsSection:addColorPicker({
-    title = "Colour",
-    default = AimingSettings.TracerSettings.Colour,
-    callback = function(value)
-        AimingSettings.TracerSettings.Colour = value
-    end
-})
-
-
--- // Ignored Player Section for Aiming Page
-local IgnoredPlayerSection = AimingPage:addSection({
-    title = "Ignored: Player"
-})
-
-local function GetPlayersString()
-    -- // Vars
-    local AllPlayers = Players:GetPlayers()
-
-    -- // Loop through each player
-    for i = 1, #AllPlayers do
-        -- // Set
-        AllPlayers[i] = tostring(AllPlayers[i])
-    end
-
-    -- // Return
-    return AllPlayers
-end
-local PlayerDropdown = IgnoredPlayerSection:addDropdown({
-    title = "Select Player",
-    list = GetPlayersString(),
-    default = GetPlayersString()[1]
-})
-
-Players.PlayerAdded:Connect(function()
-    PlayerDropdown.Options:Update({
-        list = GetPlayersString()
+    -- //
+    local CharacterParts = AimingUtilities.ArrayToString(GetCharacterParts())
+    local TargetPartB = TargetPartSelection:AddDropdown("AimingTargetPartSelection", {
+        Values = CharacterParts,
+        Default = 1,
+        Multi = false,
+        Text = "Select Target Part",
+        Tooltip = "These are the possible target parts"
     })
-end)
-Players.PlayerRemoving:Connect(function()
-    PlayerDropdown.Options:Update({
-        list = GetPlayersString()
-    })
-end)
-
-IgnoredPlayerSection:addButton({
-    title = "Ignore Player",
-    callback = function()
+    TargetPartSelection:AddButton("Add", function()
         -- // Vars
-        local Player = Players:FindFirstChild(PlayerDropdown.Options.title)
+        local TargetPart = TargetPartB.Value
+
+        -- // Make sure does not exist already
+        local TargetPartI = table.find(AimingSettings.TargetPart, TargetPart)
+        if (TargetPartI) then
+            return Library:Notify("Already added", 3)
+        end
+
+        -- // Add
+        table.insert(AimingSettings.TargetPart, TargetPart)
+
+        -- // Update dropdown
+        TargetPartA.Values = AimingSettings.TargetPart
+        TargetPartA:SetValues()
+    end):AddButton("Remove", function()
+        -- // Vars
+        local TargetPart = TargetPartB.Value
+
+        -- // Make sure does exist already
+        local TargetPartI = table.find(AimingSettings.TargetPart, TargetPart)
+        if (not TargetPartI) then
+            return Library:Notify("Not already added", 3)
+        end
+
+        -- // Add
+        table.remove(AimingSettings.TargetPart, TargetPartI)
+
+        -- // Update dropdown
+        TargetPartA.Values = AimingSettings.TargetPart
+        TargetPartA:SetValues()
+    end)
+
+    -- //
+    local DrawingManagementBox = AimingTab:AddLeftTabbox()
+    local FOVManagement = DrawingManagementBox:AddTab("FOV Settings")
+    local TracerManagement = DrawingManagementBox:AddTab("Tracer Settings")
+
+    -- //
+    FOVManagement:AddToggle("AimingFOVEnabled", {
+        Text = "Enabled",
+        Default = AimingSettings.FOVSettings.Enabled,
+        Tooltip = "Toggle the FOV Circle on and off",
+        Callback = function(Value)
+            AimingSettings.FOVSettings.Enabled = Value
+        end
+    }):AddColorPicker("AimingFOVColour", {
+        Text = "Colour",
+        Default = AimingSettings.FOVSettings.Colour,
+        Tooltip = "The colour of the FOV Circle",
+        Callback = function(Value)
+            AimingSettings.FOVSettings.Colour = Value
+        end
+    })
+    FOVManagement:AddSlider("AimingFOVScale", {
+        Text = "Scale",
+        Tooltip = "The size of the FOV Circle",
+        Default = AimingSettings.FOVSettings.Scale,
+        Min = 0,
+        Max = 360,
+        Rounding = 1,
+        Callback = function(Value)
+            AimingSettings.FOVSettings.Scale = Value
+        end
+    })
+
+    -- //
+    TracerManagement:AddToggle("AimingTracerEnabled", {
+        Text = "Enabled",
+        Default = AimingSettings.TracerSettings.Enabled,
+        Tooltip = "Toggle the tracer on and off",
+        Callback = function(Value)
+            AimingSettings.TracerSettings.Enabled = Value
+        end
+    }):AddColorPicker("AimingTracerColour", {
+        Text = "Colour",
+        Default = AimingSettings.TracerSettings.Colour,
+        Tooltip = "The colour of the tracer",
+        Callback = function(Value)
+            AimingSettings.TracerSettings.Colour = Value
+        end
+    })
+
+    -- //
+    local IgnoredManagementBox = AimingTab:AddRightTabbox("Ignored Management")
+    local PlayerManagement = IgnoredManagementBox:AddTab("Player")
+    local TeamManagement = IgnoredManagementBox:AddTab("Team")
+
+    -- //
+    local PlayerDropdown = PlayerManagement:AddDropdown("AimingIgnoredPlayerDropdown", {
+        Default = 2,
+        Multi = false,
+        Text = "Select Player",
+        Tooltip = "These are the current players",
+        SpecialType = "Player"
+    })
+    PlayerManagement:AddButton("Ignore", function()
+        -- // Vars
+        local Player = Players:FindFirstChild(PlayerDropdown.Value)
 
         -- // Make sure we have the player
         if (not Player) then
-            return UI:Notify({
-                title = "Aiming: Ignore Player",
-                context = "Player does not exist"
-            })
+            return Library:Notify("Player does not exist", 3)
         end
 
         -- // Make sure the player is not already ignored
         local PlayerI = table.find(AimingSettings.Ignored.Players, Player)
         if (PlayerI) then
-            return UI:Notify({
-                title = "Aiming: Ignore Player",
-                context = "Player already ignored"
-            })
+            return Library:Notify("Player already ignored", 3)
         end
 
         -- //
         table.insert(AimingSettings.Ignored.Players, Player)
-    end
-})
-IgnoredPlayerSection:addButton({
-    title = "Unignore Player",
-    callback = function()
+    end):AddButton("Unignore", function()
         -- // Vars
-        local Player = Players:FindFirstChild(PlayerDropdown.Options.title)
+        local Player = Players:FindFirstChild(PlayerDropdown.Value)
 
         -- // Make sure we have the player
         if (not Player) then
-            return UI:Notify({
-                title = "Aiming: Unignore Player",
-                context = "Player does not exist"
-            })
+            return Library:Notify("Player does not exist", 3)
         end
 
-        -- // Make sure the player is already ignored
+        -- // Make sure the player is not already ignored
         local PlayerI = table.find(AimingSettings.Ignored.Players, Player)
         if (not PlayerI) then
-            return UI:Notify({
-                title = "Aiming: Unignore Player",
-                context = "Player not ignored"
-            })
+            return Library:Notify("Player not ignored", 3)
         end
 
         -- //
         table.remove(AimingSettings.Ignored.Players, PlayerI)
-    end
-})
+    end)
 
--- // Ignored Team Section for Aiming Page
-local IgnoredTeamSection = AimingPage:addSection({
-    title = "Ignored: Team"
-})
-
-IgnoredTeamSection:addToggle({
-    title = "Ignore Local Team",
-    default = AimingSettings.Ignored.IgnoreLocalTeam,
-    callback = function(value)
-        AimingSettings.Ignored.IgnoreLocalTeam = value
-    end
-})
-
-local function GetTeamsString()
-    -- // Vars
-    local AllTeams = Teams:GetTeams()
-
-    -- // Loop through each player
-    for i = 1, #AllTeams do
-        -- // Set
-        AllTeams[i] = tostring(AllTeams[i])
-    end
-
-    -- // Return
-    return AllTeams
-end
-local TeamDropdown = IgnoredTeamSection:addDropdown({
-    title = "Select Team",
-    list = GetTeamsString()
-})
-
-IgnoredTeamSection:addButton({
-    title = "Ignore Team",
-    callback = function()
+    -- //
+    local TeamDropdown = TeamManagement:AddDropdown("AimingIgnoredTeamsDropdown", {
+        Default = 1,
+        Multi = false,
+        Text = "Select Team",
+        Tooltip = "These are the current teams",
+        SpecialType = "Team"
+    })
+    TeamManagement:AddToggle("AimingIgnoreLocalTeam", {
+        Text = "Ignore Local Team",
+        Default = AimingSettings.Ignored.IgnoreLocalTeam,
+        Tooltip = "Ignores the local team",
+        Callback = function(Value)
+            AimingSettings.Ignored.IgnoreLocalTeam = Value
+        end
+    })
+    TeamManagement:AddButton("Ignore", function()
         -- // Vars
-        local Team = Teams:FindFirstChild(TeamDropdown.Options.title)
+        local Team = Teams:FindFirstChild(TeamDropdown.Library)
 
         -- // Make sure we have the player
         if (not Team) then
-            return UI:Notify({
-                title = "Aiming: Ignore Team",
-                context = "Team does not exist"
-            })
+            return Library:Notify("Team does not exist", 3)
         end
 
         -- // Make sure the player is not already ignored
         local TeamI = table.find(AimingSettings.Ignored.Teams, Team)
         if (TeamI) then
-            return UI:Notify({
-                title = "Aiming: Ignore Team",
-                context = "Team already ignored"
-            })
+            return Library:Notify("Team already ignored", 3)
         end
 
         -- //
         table.insert(AimingSettings.Ignored.Teams, Team)
-    end
-})
-IgnoredTeamSection:addButton({
-    title = "Unignore Team",
-    callback = function()
+    end):AddButton("Unignore", function()
         -- // Vars
-        local Team = Teams:FindFirstChild(TeamDropdown.Options.title)
+        local Team = Teams:FindFirstChild(TeamDropdown.Library)
 
         -- // Make sure we have the player
         if (not Team) then
-            return UI:Notify({
-                title = "Aiming: Unignore Team",
-                context = "Team does not exist"
-            })
+            return Library:Notify("Team does not exist", 3)
         end
 
-        -- // Make sure the player is already ignored
+        -- // Make sure the player is not already ignored
         local TeamI = table.find(AimingSettings.Ignored.Teams, Team)
         if (not TeamI) then
-            return UI:Notify({
-                title = "Aiming: Unignore Team",
-                context = "Team not ignored"
-            })
+            return Library:Notify("Team not ignored", 3)
         end
 
         -- //
         table.remove(AimingSettings.Ignored.Teams, TeamI)
-    end
-})
-
-Teams.ChildAdded:Connect(function()
-    TeamDropdown.Options:Update({
-        list = GetTeamsString()
-    })
-end)
-Teams.ChildRemoved:Connect(function()
-    TeamDropdown.Options:Update({
-        list = GetTeamsString()
-    })
-end)
-
--- // Settings Page
-local Settings = UI:addPage({
-    title = "Settings",
-    icon = 5012544693
-})
-
--- // Settings
-local SettingsSection = Settings:addSection({
-    title = "Settings"
-})
-
-SettingsSection:addKeybind({
-    title = "Toggle GUI",
-    key = Enum.KeyCode.LeftControl,
-    callback = function()
-        UI:toggle()
-    end
-})
-
--- // Section for the Colour Theme Customisation Page
-local Colours = Settings:addSection({
-    title = "Colours"
-})
-
--- // Adding a colour picker for each type of theme customisable
-for theme, colour in pairs(Themes) do
-    Colours:addColorPicker({
-        title = theme,
-        default = colour,
-        callback = function(colour3)
-            UI:setTheme({
-                theme = theme,
-                color3 = colour3
-            })
-        end
-    })
+    end)
 end
 
--- // Load
-UI:SelectPage({
-    page = UI.pages[1],
-    toggle = true
-})
-
 -- //
-Aiming.GUI = {UI, AimingPage, Settings}
-return UI, AimingPage, Settings
+local UISettingsTab = Window:AddTab("UI Settings")
+do
+    local MenuGroup = UISettingsTab:AddLeftGroupbox("Menu Settings")
+
+    MenuGroup:AddButton("Unload", function()
+        Library:Unload()
+    end)
+
+    MenuGroup:AddLabel("Menu bind"):AddKeyPicker("MenuKeybind", {
+        Default = "End",
+        NoUI = true,
+        Text = "Menu keybind"
+    })
+
+    Library.ToggleKeybind = Options.MenuKeybind
+end
+
+ThemeManager:SetLibrary(Library)
+SaveManager:SetLibrary(Library)
+
+SaveManager:BuildConfigSection(UISettingsTab)
+ThemeManager:ApplyToTab(UISettingsTab)
+
+-- // Misc
+Library:OnUnload(function()
+    Library.Unloaded = true
+end)
+
+SaveManager:IgnoreThemeSettings()
+
+SaveManager:SetIgnoreIndexes({"MenuKeybind"})
+
+-- // Return
+Aiming.GUI = {Library, AimingTab, UISettingsTab}
+return Library, AimingTab, UISettingsTab
