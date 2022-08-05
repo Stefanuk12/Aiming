@@ -326,6 +326,7 @@ end
 
 -- //
 local UISettingsTab = Window:AddTab("UI Settings")
+UISettingsTab:SetLayoutOrder(69420) -- // so it sticks to the end
 do
     local MenuGroup = UISettingsTab:AddLeftGroupbox("Menu Settings")
 
