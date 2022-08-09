@@ -258,7 +258,16 @@ do
 
     -- // Get team
     function Utilities.TeamMatch(Player1, Player2)
-        return Player1.Team == Player2.Team and Player1.TeamColor == Player2.TeamColor
+        -- // Converting to teams
+        if (Player1:IsA("Player")) then
+            Player1 = Player1.Team
+        end
+        if (Player2:IsA("Player")) then
+            Player2 = Player2.Team
+        end
+
+        -- // Checking
+        return Player1 == Player2
     end
 
     -- // Check if a part is visible (to camera)

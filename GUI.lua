@@ -289,7 +289,7 @@ do
     })
     TeamManagement:AddButton("Ignore", function()
         -- // Vars
-        local Team = Teams:FindFirstChild(TeamDropdown.Library)
+        local Team = Teams:FindFirstChild(TeamDropdown.Value)
 
         -- // Make sure we have the player
         if (not Team) then
@@ -306,7 +306,7 @@ do
         table.insert(AimingSettings.Ignored.Teams, Team)
     end):AddButton("Unignore", function()
         -- // Vars
-        local Team = Teams:FindFirstChild(TeamDropdown.Library)
+        local Team = Teams:FindFirstChild(TeamDropdown.Value)
 
         -- // Make sure we have the player
         if (not Team) then
