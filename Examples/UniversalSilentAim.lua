@@ -295,7 +295,7 @@ __index = hookmetamethod(game, "__index", function(t, k)
         local MethodEnabled, RealMethod = IsMethodEnabled(k)
 
         -- // Make sure everything is in order 2
-        if not (MethodEnabled and Configuration.AdditionalCheck("__index", nil, callingscript, t, RealMethod)) then
+        if (not MethodEnabled or not Configuration.AdditionalCheck("__index", nil, callingscript, t, RealMethod)) then
             return __index(t, k)
         end
 
@@ -340,7 +340,7 @@ __namecall = hookmetamethod(game, "__namecall", function(...)
         local MethodEnabled, RealMethod = IsMethodEnabled(method)
 
         -- // Make sure all is in order 2
-        if not (MethodEnabled and ValidateArguments(args, RealMethod) and Configuration.AdditionalCheck("__namecall", RealMethod, callingscript, ...)) then
+        if (not MethodEnabled or not ValidateArguments(args, RealMethod) and Configuration.AdditionalCheck("__namecall", RealMethod, callingscript, ...)) then
             return __namecall(...)
         end
 
