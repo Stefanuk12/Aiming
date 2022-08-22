@@ -21,7 +21,6 @@ local TS = require(ReplicatedStorage.TS)
 local Characters = debug.getupvalue(TS.Characters.GetCharacter, 1)
 
 local LocalPlayer = Players.LocalPlayer
-local CurrentCamera = Workspace.CurrentCamera
 local GunWorkspace = {}
 
 -- // Adding all of the current guns
@@ -93,7 +92,7 @@ end
 -- // Custom Raycast Ignore
 function AimingSettings.RaycastIgnore()
     -- // Base Ignore
-    local Base = {CurrentCamera, AimingUtilities.Character(LocalPlayer)}
+    local Base = {Workspace.CurrentCamera, AimingUtilities.Character(LocalPlayer)}
 
     -- // Add all guns
     for _, Gun in pairs(GunWorkspace) do
