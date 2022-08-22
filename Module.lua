@@ -27,7 +27,7 @@ local Raycast = Workspace.Raycast
 local GetPlayers = Players.GetPlayers
 local Instancenew = Instance.new
 local WorldToViewportPoint = Instancenew("Camera").WorldToViewportPoint
-local IsDescendantOf = Instancenew("Part").IsDescendantOf
+local IsAncestorOf = Instancenew("Part").IsAncestorOf
 local FindFirstChildWhichIsA = Instancenew("Part").FindFirstChildWhichIsA
 local FindFirstChild = Instancenew("Part").FindFirstChild
 local tableremove = table.remove
@@ -271,7 +271,7 @@ do
     end
 
     -- // Check if a part is visible (to camera)
-    function Utilities.IsPartVisible(Part, PartDescendant)
+    function Utilities.IsPartVisible(Part, PartAncestor)
         -- // Vars
         local Character = Utilities.Character(LocalPlayer)
         local Origin = GetCurrentCamera().CFrame.Position
@@ -292,7 +292,7 @@ do
             if (Result) then
                 -- // Vars
                 local PartHit = Result.Instance
-                local Visible = PartHit == Part or IsDescendantOf(PartHit, PartDescendant)
+                local Visible = PartHit == Part or IsAncestorOf(PartHit, PartAncestor)
 
                 -- // Return
                 return Visible
