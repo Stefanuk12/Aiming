@@ -41,6 +41,16 @@ Workspace.ChildAdded:Connect(function(child)
 end)
 
 -- //
+local IsPartVisible = AimingUtilities.IsPartVisible
+function AimingUtilities.IsPartVisible(Part, PartDescendant)
+    if (PartDescendant and PartDescendant.Parent) then
+        PartDescendant = PartDescendant.Parent
+    end
+
+    return IsPartVisible(Part, PartDescendant)
+end
+
+-- //
 function AimingUtilities.Character(Player, Index)
     -- // Default
     Index = Index or "Hitbox"
