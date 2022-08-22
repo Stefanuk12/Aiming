@@ -292,7 +292,7 @@ do
             if (Result) then
                 -- // Vars
                 local PartHit = Result.Instance
-                local Visible = PartHit == Part or IsAncestorOf(PartHit, PartAncestor)
+                local Visible = PartHit == Part or IsAncestorOf(PartAncestor, PartHit)
 
                 -- // Return
                 return Visible

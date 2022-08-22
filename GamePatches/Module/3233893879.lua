@@ -6,20 +6,16 @@
 
 -- // Dependencies
 local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/Module.lua"))()
-local AimingSettings = Aiming.Settings
 local AimingUtilities = Aiming.Utilities
 local AimingChecks = Aiming.Checks
 
 -- // Services
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Teams = game:GetService("Teams")
-local Workspace = game:GetService("Workspace")
 
 -- // Vars
 local TS = require(ReplicatedStorage.TS)
 local Characters = debug.getupvalue(TS.Characters.GetCharacter, 1)
-
 
 -- //
 local IsPartVisible = AimingUtilities.IsPartVisible
@@ -34,7 +30,7 @@ end
 -- //
 function AimingUtilities.Character(Player, Index)
     -- // Default
-    Index = Index or "Hitbox"
+    Index = Index or "Body"
 
     -- // Get the character
     local Character = Characters[Player]
