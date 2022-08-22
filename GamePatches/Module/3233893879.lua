@@ -20,25 +20,6 @@ local Workspace = game:GetService("Workspace")
 local TS = require(ReplicatedStorage.TS)
 local Characters = debug.getupvalue(TS.Characters.GetCharacter, 1)
 
-local LocalPlayer = Players.LocalPlayer
-local GunWorkspace = {}
-
--- // Adding all of the current guns
-local function IsGun(Model)
-    return not (Model:IsA("Folder") or Model.Name == "Terrain")
-end
-for _, v in ipairs(Workspace:GetChildren()) do
-    if (IsGun(v)) then
-        table.insert(GunWorkspace, v)
-    end
-end
-
--- // Add all future guns
-Workspace.ChildAdded:Connect(function(child)
-    if (IsGun(child)) then
-        table.insert(GunWorkspace, child)
-    end
-end)
 
 -- //
 local IsPartVisible = AimingUtilities.IsPartVisible
@@ -97,20 +78,6 @@ function AimingChecks.Health(Player)
 
     -- //
     return Health.Value > 0
-end
-
--- // Custom Raycast Ignore
-function AimingSettings.RaycastIgnore()
-    -- // Base Ignore
-    local Base = {Workspace.CurrentCamera, AimingUtilities.Character(LocalPlayer)}
-
-    -- // Add all guns
-    for _, Gun in pairs(GunWorkspace) do
-        table.insert(Base, Gun)
-    end
-
-    -- // Return
-    return Base
 end
 
 -- // Return
