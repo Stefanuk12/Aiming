@@ -93,7 +93,7 @@ end
 -- // Custom Raycast Ignore
 function AimingSettings.RaycastIgnore()
     -- // Base Ignore
-    local Base = {CurrentCamera, AimingUtilities.Character(LocalPlayer)}
+    local Base = {CurrentCamera, AimingUtilities.Character(LocalPlayer), Workspace.Geometry, Workspace.Terrain}
 
     -- // Add all guns
     for _, Gun in pairs(GunWorkspace) do
