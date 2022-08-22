@@ -44,7 +44,7 @@ end)
 -- //
 function AimingUtilities.Character(Player, Index)
     -- // Default
-    Index = Index or "Body"
+    Index = Index or "Hitbox"
 
     -- // Get the character
     local Character = Characters[Player]
