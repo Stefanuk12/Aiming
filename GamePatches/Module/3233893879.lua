@@ -12,22 +12,17 @@ local AimingChecks = Aiming.Checks
 
 -- // Services
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Teams = game:GetService("Teams")
 local Workspace = game:GetService("Workspace")
 
 -- // Vars
+local TS = require(ReplicatedStorage.TS)
+local Characters = debug.getupvalue(TS.Characters.GetCharacter, 1)
+
 local LocalPlayer = Players.LocalPlayer
 local CurrentCamera = Workspace.CurrentCamera
 local GunWorkspace = {}
-
--- // Grabbing the character manager
-local CharacterManager
-for _, v in ipairs(getgc(true)) do
-    if (typeof(v) == "table" and rawget(v, "InitProjectile") and rawget(v, "TS")) then
-        CharacterManager = getupvalue(v.TS.Characters.GetCharacter, 1)
-        break
-    end
-end
 
 -- // Adding all of the current guns
 local function IsGun(Model)
@@ -52,35 +47,35 @@ function AimingUtilities.Character(Player, Index)
     Index = Index or "Body"
 
     -- // Get the character
-    local Character = CharacterManager[Player]
-    if (not Character) then return end
+    local Character = Characters[Player]
+    if (not Character) then
+        return
+    end
 
     -- // Return their body
     return Index == "Character" and Character or Character:FindFirstChild(Index)
 end
 
 -- //
-function AimingUtilities.TeamMatch(Player1, Player2)
-    -- // Getting their teams
-    local Team1 = Teams:FindFirstChild(Player1.Name, true)
-    local Team2 = Teams:FindFirstChild(Player2.Name, true)
-
-    -- // Make sure we have their teams
-    if not (Team1 or Team2) then
-        return false
+local function GetTeam(Player)
+    for _, v in ipairs(Teams:GetChildren()) do
+        if (v.Players:FindFirstChild(Player.Name)) then
+            return v.Name
+        end
     end
-
-    -- // Grab Team
-    Team1 = Team1.Parent.Parent.Name
-    Team2 = Team2.Parent.Parent.Name
+end
+function AimingUtilities.TeamMatch(Player1, Player2)
+    -- // Grab their teams
+    local Player1Team = GetTeam(Player1)
+    local Player2Team = GetTeam(Player2)
 
     -- // FFA Check
-    if (Team1 == "FFA" or Team2 == "FFA") then
+    if (Player1Team == "FFA" or Player2Team == "FFA") then
         return false
     end
 
     -- // Return
-    return Team1 == Team2
+    return Player1Team == Player2Team
 end
 
 -- //
