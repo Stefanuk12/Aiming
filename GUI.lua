@@ -49,6 +49,7 @@ do
         end
 
         -- // Return
+        table.insert(Parts, "All")
         return Parts
     end
 

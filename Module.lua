@@ -633,29 +633,38 @@ function Aiming.GetClosestTargetPartToCursor(Character)
         end
     end
 
+    -- //
+    local function CheckAll()
+        -- // Loop through character children
+        for _, v in pairs(GetChildren(Character)) do
+            -- // See if it a part
+            if (v:IsA("BasePart")) then
+                -- // Check it
+                CheckTargetPart(v)
+            end
+        end
+    end
+
     -- // String check
     if (typeof(TargetParts) == "string") then
         -- // Check if it all
         if (TargetParts == "All") then
-            -- // Loop through character children
-            for _, v in pairs(GetChildren(Character)) do
-                -- // See if it a part
-                if (v:IsA("BasePart")) then
-                    -- // Check it
-                    CheckTargetPart(v)
-                end
-            end
+            CheckAll()
         else
             -- // Individual
             CheckTargetPart(TargetParts)
         end
     end
 
-    -- //
     if (typeof(TargetParts) == "table") then
-        -- // Loop through all target parts and check them
-        for _, TargetPartName in pairs(TargetParts) do
-            CheckTargetPart(TargetPartName)
+        -- // Check if All is included
+        if (table.find(TargetParts, "All")) then
+            CheckAll()
+        else
+            -- // Loop through all target parts and check them
+            for _, TargetPartName in pairs(TargetParts) do
+                CheckTargetPart(TargetPartName)
+            end
         end
     end
 
