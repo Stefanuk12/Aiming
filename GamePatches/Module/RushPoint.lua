@@ -27,6 +27,12 @@ AimingSettings.TargetPart = {"HumanoidRootPart", "Head", "LowerTorso", "UpperTor
 
 -- // Character
 function AimingUtilities.Character(Player)
+    -- // Character exists for LocalPlayer
+    if (Player == LocalPlayer) then
+        return LocalPlayer.Character
+    end
+
+    -- // Everyone else
     return Characters[Player]
 end
 
