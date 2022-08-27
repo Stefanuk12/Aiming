@@ -17,7 +17,13 @@ local CurrentCamera = Workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 local MapFolder = Workspace.MapFolder
 local GameStats = MapFolder.GameStats
-local Characters = debug.getupvalue(getsenv(ReplicatedStorage.BAC.Characters).NewChar, 1)
+local Characters
+
+-- // bruh. syn v2 bugging and returning empty getsenv???
+pcall(function()
+    Characters = debug.getupvalue(getsenv(ReplicatedStorage.BAC.Characters).NewChar, 1)
+end)
+Characters = Characters or debug.getupvalue(debug.getupvalue(getrawmetatable(require(game.ReplicatedStorage.BAC.Characters)).__index, 1).GetCharacter, 1)
 
 -- //
 local AimingIgnored = Aiming.Ignored
