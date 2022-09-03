@@ -99,7 +99,7 @@ local Friends = {}
 -- // Loop through every player
 for _, Player in ipairs(Players:GetPlayers()) do
     -- // If friends, add to table
-    if (LocalPlayer:IsFriendsWith(Player.UserId)) then
+    if (Player ~= LocalPlayer and LocalPlayer:IsFriendsWith(Player.UserId)) then
         table.insert(Friends, Player)
     end
 end
