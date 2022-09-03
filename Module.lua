@@ -68,6 +68,7 @@ local AimingSettings = {
 
         Teams = {},
         IgnoreLocalTeam = true,
+        IgnoreFriends = false,
 
         Players = {
             LocalPlayer,
@@ -91,6 +92,34 @@ local Aiming = {
     }
 }
 getgenv().Aiming = Aiming
+
+-- // Keep track of current friends
+local Friends = {}
+
+-- // Loop through every player
+for _, Player in ipairs(Players:GetPlayers()) do
+    -- // If friends, add to table
+    if (LocalPlayer:IsFriendsWith(Player.UserId)) then
+        table.insert(Friends, Player)
+    end
+end
+
+-- // See when a new player joins
+Players.PlayerAdded:Connect(function(Player)
+    -- // If friends, add to table
+    if (LocalPlayer:IsFriendsWith(Player.UserId)) then
+        table.insert(Friends, Player)
+    end
+end)
+
+-- // See when player leaves (not needed because of GC but just in case)
+Players.PlayerRemoving:Connect(function(Player)
+    -- // If in friends table, remove
+    local i = table.find(Friends, Player)
+    if (i) then
+        table.remove(Friends, i)
+    end
+end)
 
 -- // Get Settings
 function AimingSettings.Get(...)
@@ -411,6 +440,20 @@ do
         local Direction = Utilities.SolveProjectileTravelTime(Origin, ProjSpeed, SolvedPrediction, Gravity)
         return Direction
     end
+
+    -- // Updates the Friends table
+    function Utilities.UpdateFriends()
+        -- // Loop through every player
+        for _, Player in ipairs(Players:GetPlayers()) do
+            -- // If friends, add to table (and not already added)
+            if (LocalPlayer:IsFriendsWith(Player.UserId) and not table.find(Friends, Player)) then
+                table.insert(Friends, Player)
+            end
+        end
+
+        -- // Return
+        return Friends
+    end
 end
 
 -- // Ignored
@@ -519,6 +562,11 @@ do
 
     -- // Check if player is ignored
     function Ignored.IsIgnoredPlayer(Player)
+        -- // Friend check
+        if (IgnoredSettings.IgnoreFriends and table.find(Friends, Player)) then
+            return false
+        end
+
         -- // Vars
         local IgnoredPlayers = IgnoredSettings.Players
 
@@ -811,6 +859,16 @@ Heartbeat:Connect(function(deltaTime)
     Aiming.Loaded = true
 end)
 
+-- // Other stuff
+task.spawn(function()
+    -- // Repeat every secodn
+    while true do wait(1)
+        -- // Update the friends list
+        Aiming.Utilities.UpdateFriends()
+    end
+end)
+
+-- // Credits
 task.delay(1, function()
     -- // Credits (by disabling this and not including your own way of crediting within the script, e.g. credits tab, is violating the license agreement. Beware!)
     if (Aiming.ShowCredits) then

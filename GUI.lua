@@ -236,6 +236,14 @@ do
         Tooltip = "These are the current players",
         SpecialType = "Player"
     })
+    PlayerManagement:AddToggle("AimingIgnoreLocalTeam", {
+        Text = "Ignore Friends",
+        Default = AimingSettings.Ignored.IgnoreFriends,
+        Tooltip = "Ignores your Roblox friends",
+        Callback = function(Value)
+            AimingSettings.Ignored.IgnoreFriends = Value
+        end
+    })
     PlayerManagement:AddButton("Ignore", function()
         -- // Vars
         local Player = Players:FindFirstChild(PlayerDropdown.Value)
