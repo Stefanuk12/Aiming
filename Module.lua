@@ -564,7 +564,7 @@ do
     function Ignored.IsIgnoredPlayer(Player)
         -- // Friend check
         if (IgnoredSettings.IgnoreFriends and table.find(Friends, Player)) then
-            return false
+            return true
         end
 
         -- // Vars
