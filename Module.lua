@@ -5,6 +5,7 @@ local SignalManager = loadstring(game:HttpGet("https://raw.githubusercontent.com
 local BeizerManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/BeizerManager.lua"))()
 
 -- // Services
+local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local GuiService = game:GetService("GuiService")
@@ -41,6 +42,9 @@ local GetChildren = Instancenew("Part").GetChildren
 local AimingSettings = {
     Enabled = true,
     VisibleCheck = true,
+    TeamCheck = true,
+    PlayerCheck = true,
+    IgnoredCheck = true,
     HitChance = 100,
     TargetPart = {"Head", "HumanoidRootPart"},
     RaycastIgnore = nil,
@@ -454,6 +458,34 @@ do
         -- // Return
         return Friends
     end
+
+    -- // Merges table b onto table a. Only works with same keys
+    function Utilities.MergeTables(a, b)
+        -- // Default
+        if (typeof(a) ~= "table" or typeof(b) ~= "table") then
+            return a
+        end
+
+        -- // Loop through the first table
+        for i, v in pairs(a) do
+            -- // Make sure this exists in the other table
+            local bi = b[i]
+            if (not bi) then
+                continue
+            end
+
+            -- // Recursive if a table
+            if (typeof(v) == "table" and typeof(bi) == "table") then
+                bi = Utilities.MergeTables(v, bi)
+            end
+
+            -- // Set
+            a[i] = bi
+        end
+
+        -- // Return
+        return a
+    end
 end
 
 -- // Ignored
@@ -540,6 +572,11 @@ do
 
     -- // Check teams
     function Ignored.IsIgnoredTeam(Player)
+        -- // Check
+        if (not AimingSettings.TeamCheck) then
+            return false
+        end
+
         -- // Vars
         local IgnoredTeams = IgnoredSettings.Teams
 
@@ -562,6 +599,11 @@ do
 
     -- // Check if player is ignored
     function Ignored.IsIgnoredPlayer(Player)
+        -- // Check
+        if (not AimingSettings.PlayerCheck) then
+            return false
+        end
+
         -- // Friend check
         if (IgnoredSettings.IgnoreFriends and table.find(Friends, Player)) then
             return true
@@ -597,6 +639,12 @@ do
 
     -- // Check if a player is ignored
     function Ignored.IsIgnored(Player)
+        -- // Check
+        if (not AimingSettings.IgnoredCheck) then
+            return false
+        end
+
+        -- // Return
         return Ignored.IsIgnoredPlayer(Player) or Ignored.IsIgnoredTeam(Player)
     end
 
@@ -638,9 +686,110 @@ do
     end
 end
 
+-- // Configs
+local Config = {}
+Aiming.Config = Config
+do
+    -- // Grabs a directory's files
+    local function GetDirectoryDescendants(Folder, Descendants)
+        Descendants = Descendants or {}
+
+        for _, Path in listfiles(Folder) do
+            if (not isfolder(Path)) then
+                table.insert(Descendants, Path)
+                continue
+            end
+
+            for i, PathDescendant in GetDirectoryDescendants(Path) do
+                table.insert(Descendants, PathDescendant)
+            end
+        end
+
+        return Descendants
+    end
+
+    -- // Grab the current configs
+    function Config.Grab(AllPlaces)
+        -- // Configs
+        local Configurations = {
+            Universal = {
+                Default = table.clone(Aiming.Settings)
+            }
+        }
+
+        -- // Make sure the Aiming folder exists
+        if (not isfolder("Aiming")) then
+            return Configurations
+        end
+
+        -- // Loop through each file
+        for _, directory in GetDirectoryDescendants("Aiming") do
+            -- // JSON decode and such
+            local DirectorySplit = directory:split("\\")
+            local _, Type, FileName = unpack(DirectorySplit)
+            local Configuration = HttpService:JSONDecode(readfile(directory))
+
+            -- // Ensure valid types (only Universal and place ids)
+            local TypeNumber = tonumber(Type)
+            if (Type ~= "Universal" and TypeNumber == nil) then
+                continue
+            end
+
+            -- // Only grab current place id
+            if (not AllPlaces and TypeNumber ~= nil and TypeNumber ~= game.PlaceId) then
+                continue
+            end
+
+            -- // Add it
+            if (not Configurations[Type]) then
+                Configurations[Type] = {}
+            end
+            Configurations[Type][FileName] = Configuration
+        end
+
+        -- //
+        return Configurations
+    end
+
+    -- // Add a config
+    function Config.Add(Type, Name, config)
+        assert(Type ~= "Universal" and tonumber(Type), "invalid type, only number (game place) or Universal")
+        config = config or Aiming.Settings
+
+        local JSONConfig = HttpService:JSONEncode(config)
+        local Path = "Aiming/" .. Type
+        makefolder(Path)
+        writefile(Path .. "/" .. Name .. ".json", JSONConfig)
+    end
+
+    -- // Load a config
+    function Config.Load(Type, Name)
+        Type = Type or "Universal"
+        Name = Name or "Default"
+        local Configurations = Config.Grab()
+
+        if (Configurations[Type] and Configurations[Type][Name]) then
+            Utilities.MergeTables(Aiming.Settings, Configurations[Type][Name])
+        end
+    end
+end
+
 -- // Get Closest Target Part
+local InstanceCache = setmetatable({}, {__mode = "k"})
 function Aiming.GetClosestTargetPartToCursor(Character)
+    -- // Make sure character exists
+    if (not Character) then
+        return
+    end
+
     local TargetParts = AimingSettings.TargetPart
+
+    -- // Get the cache
+    local CharacterCache = InstanceCache[Character]
+    if (not CharacterCache) then
+        InstanceCache[Character] = {}
+        CharacterCache = InstanceCache[Character]
+    end
 
     -- // Vars
     local ClosestPart = nil
@@ -653,13 +802,17 @@ function Aiming.GetClosestTargetPartToCursor(Character)
     local function CheckTargetPart(TargetPart)
         -- // Convert string -> Instance
         if (typeof(TargetPart) == "string") then
-            TargetPart = FindFirstChild(Character, TargetPart)
+            local CachedPart = CharacterCache[TargetPart]
+            TargetPart = (CachedPart and CachedPart.Parent) and CachedPart or FindFirstChild(Character, TargetPart)
         end
 
         -- // Make sure we have a target
         if not (TargetPart) then
             return
         end
+
+        -- // Add to cache
+        CharacterCache[TargetPart.Name] = TargetPart
 
         -- // Get the length between Mouse and Target Part (on screen)
         local PartPos, onScreen = WorldToViewportPoint(GetCurrentCamera(), TargetPart.Position)
@@ -753,33 +906,41 @@ function Aiming.GetClosestToCursor(deltaTime)
         local Character = Utilities.Character(Player)
 
         -- // Make sure isn't ignored and Character exists
-        if (Ignored.IsIgnored(Player) == false and Character) then
-            -- // Vars
-            local TargetPartTemp, PartPositionTemp, PartPositionOnScreenTemp, Magnitude = Aiming.GetClosestTargetPartToCursor(Character)
-
-            -- // Check if part exists, health and custom
-            if (TargetPartTemp and Checks.Health(Player) and Checks.Custom(Player)) then
-                -- // Check if is in FOV
-                if (Magnitude < ShortestDistance) then
-                    -- // Check if Visible
-                    if (AimingSettings.VisibleCheck and not Utilities.IsPartVisible(TargetPartTemp, Character)) then continue end
-
-                    -- // Set vars
-                    ClosestPlayer = Player
-                    ShortestDistance = Magnitude
-                    TargetPart = TargetPartTemp
-                    PartPosition = PartPositionTemp
-                    PartOnScreen = PartPositionOnScreenTemp
-
-                    -- // Velocity calculations
-                    if (not PreviousPosition) then
-                        PreviousPosition = TargetPart.Position
-                    end
-                    PartVelocity = Utilities.CalculateVelocity(PreviousPosition, TargetPart.Position, deltaTime)
-                    PreviousPosition = TargetPart.Position
-                end
-            end
+        if (Ignored.IsIgnored(Player) or not Character) then
+            continue
         end
+
+        -- // Vars
+        local TargetPartTemp, PartPositionTemp, PartPositionOnScreenTemp, Magnitude = Aiming.GetClosestTargetPartToCursor(Character)
+
+        -- // Check if part exists, health and custom
+        if (not TargetPartTemp or not Checks.Health(Player) or not Checks.Custom(Player)) then
+            continue
+        end
+
+        -- // Check if is in FOV
+        if (Magnitude > ShortestDistance) then
+            continue
+        end
+
+        -- // Check if Visible
+        if (AimingSettings.VisibleCheck and not Utilities.IsPartVisible(TargetPartTemp, Character)) then
+            continue
+        end
+
+        -- // Set vars
+        ClosestPlayer = Player
+        ShortestDistance = Magnitude
+        TargetPart = TargetPartTemp
+        PartPosition = PartPositionTemp
+        PartOnScreen = PartPositionOnScreenTemp
+
+        -- // Velocity calculations
+        if (not PreviousPosition) then
+            PreviousPosition = TargetPart.Position
+        end
+        PartVelocity = Utilities.CalculateVelocity(PreviousPosition, TargetPart.Position, deltaTime)
+        PreviousPosition = TargetPart.Position
     end
 
     -- // Firing changed signals
