@@ -795,7 +795,7 @@ function Aiming.GetClosestTargetPartToCursor(Character)
     local ClosestPart = nil
     local ClosestPartPosition = nil
     local ClosestPartOnScreen = false
-    local ClosestPartMagnitudeFromMouse = nil
+    local ClosestPartMagnitudeFromMouse = 1/0
     local ShortestDistance = 1/0
 
     -- //
