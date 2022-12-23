@@ -825,7 +825,7 @@ function Aiming.GetClosestTargetPartToCursor(Character)
         local Magnitude = (AccountedPos - MousePosition).Magnitude
 
         -- //
-        if (Magnitude < ShortestDistance) then
+        if (Magnitude < ShortestDistance and onScreen) then
             ClosestPart = TargetPart
             ClosestPartPosition = PartPos
             ClosestPartOnScreen = onScreen
@@ -913,8 +913,8 @@ function Aiming.GetClosestToCursor(deltaTime)
         -- // Vars
         local TargetPartTemp, PartPositionTemp, PartPositionOnScreenTemp, Magnitude = Aiming.GetClosestTargetPartToCursor(Character)
 
-        -- // Check if part exists, health and custom
-        if (not TargetPartTemp or not Checks.Health(Player) or not Checks.Custom(Player)) then
+        -- // Check if part exists, health and custom. PartPositionOnScreenTemp IS ALWAYS TRUE, KEPT IN FOR REDUDANCY SAKE - MAY REMOVE LATER
+        if (PartPositionOnScreenTemp and not TargetPartTemp or not Checks.Health(Player) or not Checks.Custom(Player)) then
             continue
         end
 
