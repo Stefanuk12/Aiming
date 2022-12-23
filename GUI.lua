@@ -73,26 +73,26 @@ do
     })
     UniversalGroupBox:AddToggle("AimingVisibleCheck", {
         Text = "Player Check",
-        Default = AimingSettings.VisibleCheck,
+        Default = AimingSettings.PlayerCheck,
         Tooltip = "Toggle the player is ignored check",
         Callback = function(Value)
-            AimingSettings.VisibleCheck = Value
+            AimingSettings.PlayerCheck = Value
         end
     })
     UniversalGroupBox:AddToggle("AimingVisibleCheck", {
         Text = "Team Check",
-        Default = AimingSettings.VisibleCheck,
+        Default = AimingSettings.TeamCheck,
         Tooltip = "Toggle the team is ignored check",
         Callback = function(Value)
-            AimingSettings.VisibleCheck = Value
+            AimingSettings.TeamCheck = Value
         end
     })
     UniversalGroupBox:AddToggle("AimingVisibleCheck", {
         Text = "Ignored Check",
-        Default = AimingSettings.VisibleCheck,
+        Default = AimingSettings.IgnoredCheck,
         Tooltip = "Toggle all ignored checks",
         Callback = function(Value)
-            AimingSettings.VisibleCheck = Value
+            AimingSettings.IgnoredCheck = Value
         end
     })
     UniversalGroupBox:AddSlider("AimingHitChance", {
