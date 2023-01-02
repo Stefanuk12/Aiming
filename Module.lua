@@ -41,21 +41,40 @@ local GetChildren = Instancenew("Part").GetChildren
 -- // Vars
 local AimingSettings = {
     Enabled = true,
+
     VisibleCheck = true,
     TeamCheck = true,
     PlayerCheck = true,
+    FriendCheck = true,
+    ForcefieldCheck = true,
+    HealthCheck = true,
+    InvisibleCheck = true,
     IgnoredCheck = true,
+
     HitChance = 100,
     TargetPart = {"Head", "HumanoidRootPart"},
     RaycastIgnore = nil,
     Offset = Vector2new(),
+    MaxDistance = 1000,
 
     FOVSettings = {
         Circle = Drawingnew("Circle"),
         Enabled = true,
+        Visible = true,
+        Type = "Static",
         Scale = 60,
         Sides = 12,
-        Colour = Color3fromRGB(231, 84, 128)
+        Colour = Color3fromRGB(231, 84, 128),
+        DynamicFOVConstant = 25
+    },
+
+    DeadzoneFOVSettings = {
+        Circle = Drawingnew("Circle"),
+        Enabled = true,
+        Visible = true,
+        Scale = 10,
+        Sides = 30,
+        Colour = Color3fromRGB(83, 31, 46),
     },
 
     TracerSettings = {
@@ -72,7 +91,6 @@ local AimingSettings = {
 
         Teams = {},
         IgnoreLocalTeam = true,
-        IgnoreFriends = false,
 
         Players = {
             LocalPlayer,
@@ -177,14 +195,60 @@ function Aiming.UpdateFOV()
     local Settings = AimingSettings.FOVSettings
 
     -- // Set Circle Properties
-    circle.Visible = Settings.Enabled
-    circle.Radius = (Settings.Scale * 3)
     circle.Position = MousePosition
     circle.NumSides = Settings.Sides
     circle.Color = Settings.Colour
 
+    -- // Set radius based upon type
+    circle.Visible = Settings.Enabled and Settings.Visible
+    if (Settings.Type == "Dynamic") then
+        -- // Check if we have a target
+        if (not Aiming.Checks.IsAvailable()) then
+            circle.Radius = (Settings.Scale * 3)
+            return circle
+        end
+
+        -- // Grab which part we are going to use
+        local TargetPart = AimingSettings.TargetPart
+        local Part = typeof(TargetPart) == "table" and TargetPart[1] or TargetPart
+        local PartInstance = Aiming.Utilities.Character(LocalPlayer)[Part]
+
+        -- // Calculate distance, set
+        local Distance = (PartInstance.Position - Aiming.Selected.Part.Position).Magnitude
+        circle.Radius = math.round((Settings.DynamicFOVConstant / Distance) * 1000)
+    else
+        circle.Radius = (Settings.Scale * 3)
+    end
+
     -- // Return circle
     return circle
+end
+
+-- // Update
+local deadzonecircle = AimingSettings.DeadzoneFOVSettings.Circle
+circle.Transparency = 1
+circle.Thickness = 2
+circle.Color = AimingSettings.DeadzoneFOVSettings.Colour
+circle.Filled = false
+function Aiming.UpdateDeadzoneFOV()
+    -- // Make sure the circle exists
+    if not (deadzonecircle) then
+        return
+    end
+
+    -- // Vars
+    local MousePosition = GetMouseLocation(UserInputService) + AimingSettings.Offset
+    local Settings = AimingSettings.DeadzoneFOVSettings
+
+    -- // Set Circle Properties
+    deadzonecircle.Visible = Settings.Enabled and Settings.Visible
+    deadzonecircle.Radius = (Settings.Scale * 3)
+    deadzonecircle.Position = MousePosition
+    deadzonecircle.NumSides = Settings.Sides
+    deadzonecircle.Color = Settings.Colour
+
+    -- // Return circle
+    return deadzonecircle
 end
 
 -- // Update
@@ -447,10 +511,13 @@ do
 
     -- // Updates the Friends table
     function Utilities.UpdateFriends()
+        -- // Reset
+        Friends = {}
+
         -- // Loop through every player
         for _, Player in ipairs(Players:GetPlayers()) do
             -- // If friends, add to table (and not already added)
-            if (LocalPlayer:IsFriendsWith(Player.UserId) and not table.find(Friends, Player)) then
+            if (not table.find(Friends, Player)) and LocalPlayer:IsFriendsWith(Player.UserId) then
                 table.insert(Friends, Player)
             end
         end
@@ -605,7 +672,7 @@ do
         end
 
         -- // Friend check
-        if (IgnoredSettings.IgnoreFriends and table.find(Friends, Player)) then
+        if (AimingSettings.FriendCheck and table.find(Friends, Player)) then
             return true
         end
 
@@ -648,7 +715,7 @@ do
         return Ignored.IsIgnoredPlayer(Player) or Ignored.IsIgnoredTeam(Player)
     end
 
-    -- // Toggle team check
+    -- // Toggle team check (use IgnoreLocalTeam setting instead)
     function Ignored.TeamCheck(Toggle)
         if (Toggle) then
             return Ignored.IgnoreTeam(LocalPlayer.Team, LocalPlayer.TeamColor)
@@ -663,9 +730,9 @@ local Checks = {}
 Aiming.Checks = Checks
 do
     -- // Check Health
-    function Checks.Health(Player)
+    function Checks.Health(Character, Player)
         -- // Get Humanoid
-        local Character = Utilities.Character(Player)
+        Character = Character or Utilities.Character(Player)
         local Humanoid = FindFirstChildWhichIsA(Character, "Humanoid")
 
         -- // Get Health
@@ -675,8 +742,23 @@ do
         return Health > 0
     end
 
+    -- // Checks for a force field
+    function Checks.Forcefield(Character, Player)
+        -- // Get character
+        Character = Character or Utilities.Character(Player)
+        local Forcefield = FindFirstChildWhichIsA(Character, "ForceField")
+
+        -- // Return
+        return Forcefield == nil
+    end
+
+    -- // Checks if a part is invisible
+    function Checks.Invisible(Part)
+        return Part.Transparency == 1
+    end
+
     -- // Custom Check Function
-    function Checks.Custom(Player)
+    function Checks.Custom(Character, Player)
         return true
     end
 
@@ -825,7 +907,9 @@ function Aiming.GetClosestTargetPartToCursor(Character)
         local Magnitude = (AccountedPos - MousePosition).Magnitude
 
         -- //
-        if (Magnitude < ShortestDistance and onScreen) then
+        local OurPart = Utilities.Character(LocalPlayer):FindFirstChild(TargetPart.Name) or TargetPart
+        local Distance = (OurPart.Position - TargetPart.Position).Magnitude
+        if (Magnitude < ShortestDistance and onScreen and Distance < AimingSettings.MaxDistance) then
             ClosestPart = TargetPart
             ClosestPartPosition = PartPos
             ClosestPartOnScreen = onScreen
@@ -875,6 +959,9 @@ end
 
 -- //
 local PreviousPosition = nil
+local AimingSelected = Aiming.Selected
+local AimingSettingsFOVSettings = AimingSettings.FOVSettings
+local AimingSettingsDeadzoneFOVSettings = AimingSettings.DeadzoneFOVSettings
 function Aiming.GetClosestToCursor(deltaTime)
     -- // Vars
     local TargetPart = nil
@@ -883,11 +970,10 @@ function Aiming.GetClosestToCursor(deltaTime)
     local PartVelocity = nil
     local PartOnScreen = nil
     local Chance = Utilities.CalculateChance(AimingSettings.HitChance)
-    local ShortestDistance = circle.Radius
-    local AimingSelected = Aiming.Selected
+    local ShortestDistance = AimingSettingsFOVSettings.Enabled and circle.Radius or 1/0
 
-    -- // See if it passed the chance
-    if (not Chance) then
+    -- // See if it passed the chance or is not enabled
+    if (not Chance or not AimingSettings.Enabled) then
         -- // Set
         AimingSelected.Instance = nil
         AimingSelected.Part = nil
@@ -906,15 +992,24 @@ function Aiming.GetClosestToCursor(deltaTime)
         local Character = Utilities.Character(Player)
 
         -- // Make sure isn't ignored and Character exists
-        if (Ignored.IsIgnored(Player) or not Character) then
+        if (not Character or Ignored.IsIgnored(Player)) then
+            continue
+        end
+
+        -- // Checks, seperate for ultimate efficiency
+        if (AimingSettings.ForcefieldCheck and not Checks.Forcefield(Character, Player)) then
+            continue
+        end
+
+        if (AimingSettings.HealthCheck and not Checks.Health(Character, Player)) then
             continue
         end
 
         -- // Vars
         local TargetPartTemp, PartPositionTemp, PartPositionOnScreenTemp, Magnitude = Aiming.GetClosestTargetPartToCursor(Character)
 
-        -- // Check if part exists, health and custom. PartPositionOnScreenTemp IS ALWAYS TRUE, KEPT IN FOR REDUDANCY SAKE - MAY REMOVE LATER
-        if (PartPositionOnScreenTemp and not TargetPartTemp or not Checks.Health(Player) or not Checks.Custom(Player)) then
+        -- // Check if part exists, and custom. PartPositionOnScreenTemp IS ALWAYS TRUE, KEPT IN FOR REDUDANCY SAKE - MAY REMOVE LATER
+        if (not PartPositionOnScreenTemp or not TargetPartTemp or (AimingSettings.InvisibleCheck and Checks.Invisible(TargetPartTemp)) or not Checks.Custom(Character, Player)) then
             continue
         end
 
@@ -941,6 +1036,16 @@ function Aiming.GetClosestToCursor(deltaTime)
         end
         PartVelocity = Utilities.CalculateVelocity(PreviousPosition, TargetPart.Position, deltaTime)
         PreviousPosition = TargetPart.Position
+    end
+
+    -- // Check if within deadzone
+    if (AimingSettingsDeadzoneFOVSettings.Enabled and ShortestDistance <= deadzonecircle.Radius) then
+        -- // Reset, do not target.
+        AimingSelected.Instance = nil
+        AimingSelected.Part = nil
+        AimingSelected.Position = nil
+        AimingSelected.Velocity = nil
+        AimingSelected.OnScreen = nil
     end
 
     -- // Firing changed signals
@@ -1014,6 +1119,7 @@ end
 -- // Heartbeat Function
 Heartbeat:Connect(function(deltaTime)
     Aiming.UpdateFOV()
+    Aiming.UpdateDeadzoneFOV()
     Aiming.UpdateTracer()
     Aiming.GetClosestToCursor(deltaTime)
 
@@ -1023,7 +1129,7 @@ end)
 -- // Other stuff
 task.spawn(function()
     -- // Repeat every secodn
-    while true do wait(1)
+    while true do wait(10)
         -- // Update the friends list
         Aiming.Utilities.UpdateFriends()
     end

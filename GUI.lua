@@ -54,8 +54,9 @@ do
     end
 
     -- //
-    local UniversalGroupBox = AimingTab:AddLeftGroupbox("Universal")
-    UniversalGroupBox:AddToggle("AimingEnabled", {
+    local UniversalTabbox = AimingTab:AddLeftTabbox()
+    local UniversalTab = UniversalTabbox:AddTab("Universal")
+    UniversalTab:AddToggle("AimingEnabled", {
         Text = "Enabled",
         Default = AimingSettings.Enabled,
         Tooltip = "Toggle the entirety of Aiming on and off",
@@ -63,39 +64,7 @@ do
             AimingSettings.Enabled = Value
         end
     })
-    UniversalGroupBox:AddToggle("AimingVisibleCheck", {
-        Text = "Visibility Check",
-        Default = AimingSettings.VisibleCheck,
-        Tooltip = "Makes sure targets are within LoS",
-        Callback = function(Value)
-            AimingSettings.VisibleCheck = Value
-        end
-    })
-    UniversalGroupBox:AddToggle("AimingVisibleCheck", {
-        Text = "Player Check",
-        Default = AimingSettings.PlayerCheck,
-        Tooltip = "Toggle the player is ignored check",
-        Callback = function(Value)
-            AimingSettings.PlayerCheck = Value
-        end
-    })
-    UniversalGroupBox:AddToggle("AimingVisibleCheck", {
-        Text = "Team Check",
-        Default = AimingSettings.TeamCheck,
-        Tooltip = "Toggle the team is ignored check",
-        Callback = function(Value)
-            AimingSettings.TeamCheck = Value
-        end
-    })
-    UniversalGroupBox:AddToggle("AimingVisibleCheck", {
-        Text = "Ignored Check",
-        Default = AimingSettings.IgnoredCheck,
-        Tooltip = "Toggle all ignored checks",
-        Callback = function(Value)
-            AimingSettings.IgnoredCheck = Value
-        end
-    })
-    UniversalGroupBox:AddSlider("AimingHitChance", {
+    UniversalTab:AddSlider("AimingHitChance", {
         Text = "Hit Chance%",
         Tooltip = "The likelyhood of Aiming 'working'",
         Default = AimingSettings.HitChance,
@@ -104,6 +73,72 @@ do
         Rounding = 1,
         Callback = function(Value)
             AimingSettings.HitChance = Value
+        end
+    })
+
+    local UniversalChecksBox = UniversalTabbox:AddTab("Checks")
+    UniversalChecksBox:AddToggle("AimingVisibleCheck", {
+        Text = "Visibility Check",
+        Default = AimingSettings.VisibleCheck,
+        Tooltip = "Makes sure targets are within LoS",
+        Callback = function(Value)
+            AimingSettings.VisibleCheck = Value
+        end
+    })
+    UniversalChecksBox:AddToggle("AimingTeamCheck", {
+        Text = "Team Check",
+        Default = AimingSettings.TeamCheck,
+        Tooltip = "Make sure targets are not on the same team",
+        Callback = function(Value)
+            AimingSettings.TeamCheck = Value
+        end
+    })
+    UniversalChecksBox:AddToggle("AimingPlayerCheck", {
+        Text = "Player Check",
+        Default = AimingSettings.PlayerCheck,
+        Tooltip = "Check if a player is ignored",
+        Callback = function(Value)
+            AimingSettings.PlayerCheck = Value
+        end
+    })
+    UniversalChecksBox:AddToggle("AimingFriendCheck", {
+        Text = "Friend Check",
+        Default = AimingSettings.FriendCheck,
+        Tooltip = "Makes sure targets are not friends",
+        Callback = function(Value)
+            AimingSettings.FriendCheck = Value
+        end
+    })
+    UniversalChecksBox:AddToggle("AimingForcefieldCheck", {
+        Text = "Forcefield Check",
+        Default = AimingSettings.ForcefieldCheck,
+        Tooltip = "Makes sure targets do not have a forcefield",
+        Callback = function(Value)
+            AimingSettings.ForcefieldCheck = Value
+        end
+    })
+    UniversalChecksBox:AddToggle("AimingHealthCheck", {
+        Text = "Health Check",
+        Default = AimingSettings.HealthCheck,
+        Tooltip = "Makes sure targets are alive",
+        Callback = function(Value)
+            AimingSettings.HealthCheck = Value
+        end
+    })
+    UniversalChecksBox:AddToggle("AimingInvisibleCheck", {
+        Text = "Invisible Check",
+        Default = AimingSettings.InvisibleCheck,
+        Tooltip = "Makes sure targets are visible to the eye",
+        Callback = function(Value)
+            AimingSettings.InvisibleCheck = Value
+        end
+    })
+    UniversalChecksBox:AddToggle("AimingIgnoredCheck", {
+        Text = "Ignored Check",
+        Default = AimingSettings.IgnoredCheck,
+        Tooltip = "Toggle all ignored checks",
+        Callback = function(Value)
+            AimingSettings.IgnoredCheck = Value
         end
     })
 
@@ -199,56 +234,126 @@ do
 
     -- //
     local DrawingManagementBox = AimingTab:AddLeftTabbox()
-    local FOVManagement = DrawingManagementBox:AddTab("FOV Settings")
-    local TracerManagement = DrawingManagementBox:AddTab("Tracer Settings")
+    local FOVManagement = DrawingManagementBox:AddTab("FOV")
+    local DeadzoneFOVManagement = DrawingManagementBox:AddTab("Deadzone")
+    local TracerManagement = DrawingManagementBox:AddTab("Tracer")
 
     -- //
+    local AimingSettingsFOVSettings = AimingSettings.FOVSettings
     FOVManagement:AddToggle("AimingFOVEnabled", {
         Text = "Enabled",
-        Default = AimingSettings.FOVSettings.Enabled,
-        Tooltip = "Toggle the FOV Circle on and off",
+        Default = AimingSettingsFOVSettings.Enabled,
+        Tooltip = "Toggle the FOV circle's functionality",
         Callback = function(Value)
-            AimingSettings.FOVSettings.Enabled = Value
+            AimingSettingsFOVSettings.Enabled = Value
+        end
+    })
+    FOVManagement:AddToggle("AimingFOVVisible", {
+        Text = "Visible",
+        Default = AimingSettingsFOVSettings.Visible,
+        Tooltip = "Toggle the FOV circle's visibility",
+        Callback = function(Value)
+            AimingSettingsFOVSettings.Visible = Value
         end
     }):AddColorPicker("AimingFOVColour", {
         Text = "Colour",
-        Default = AimingSettings.FOVSettings.Colour,
-        Tooltip = "The colour of the FOV Circle",
+        Default = AimingSettingsFOVSettings.Colour,
+        Tooltip = "The colour of the FOV circle",
         Callback = function(Value)
-            AimingSettings.FOVSettings.Colour = Value
+            AimingSettingsFOVSettings.Colour = Value
         end
     })
     FOVManagement:AddSlider("AimingFOVScale", {
         Text = "Scale",
-        Tooltip = "The size of the FOV Circle",
-        Default = AimingSettings.FOVSettings.Scale,
+        Tooltip = "The size of the FOV circle",
+        Default = AimingSettingsFOVSettings.Scale,
         Min = 0,
         Max = 360,
         Rounding = 1,
         Callback = function(Value)
-            AimingSettings.FOVSettings.Scale = Value
+            AimingSettingsFOVSettings.Scale = Value
+        end
+    })
+    FOVManagement:AddDropdown("AimingFOVType", {
+        Text = "Type",
+        Tooltip = "Whether the FOV scales with distance (disables scale, if dynamic)",
+        Default = AimingSettingsFOVSettings.Type,
+        Multi = false,
+        Values = {"Static", "Dynamic"},
+        Callback = function(Value)
+            AimingSettingsFOVSettings.Type = Value
+        end
+    })
+    FOVManagement:AddSlider("AimingFOVDConstant", {
+        Text = "Dynamic Constant",
+        Tooltip = "The constant for the dynamic FOV circle",
+        Default = AimingSettingsFOVSettings.DynamicFOVConstant,
+        Min = 1,
+        Max = 100,
+        Rounding = 1,
+        Callback = function(Value)
+            AimingSettingsFOVSettings.DynamicFOVConstant = Value
         end
     })
 
     -- //
+    local AimingSettingsDeadzoneFOVSettings = AimingSettings.DeadzoneFOVSettings
+    DeadzoneFOVManagement:AddToggle("AimingDFOVEnabled", {
+        Text = "Enabled",
+        Default = AimingSettingsDeadzoneFOVSettings.Enabled,
+        Tooltip = "Toggle the deadzone circle's functionality",
+        Callback = function(Value)
+            AimingSettingsDeadzoneFOVSettings.Enabled = Value
+        end
+    })
+    DeadzoneFOVManagement:AddToggle("AimingDFOVVisible", {
+        Text = "Visible",
+        Default = AimingSettingsDeadzoneFOVSettings.Visible,
+        Tooltip = "Toggle the deadzone circle's visibility",
+        Callback = function(Value)
+            AimingSettingsDeadzoneFOVSettings.Visible = Value
+        end
+    }):AddColorPicker("AimingDFOVColour", {
+        Text = "Colour",
+        Default = AimingSettingsDeadzoneFOVSettings.Colour,
+        Tooltip = "The colour of the deadzone circle",
+        Callback = function(Value)
+            AimingSettingsDeadzoneFOVSettings.Colour = Value
+        end
+    })
+    DeadzoneFOVManagement:AddSlider("AimingDFOVScale", {
+        Text = "Scale",
+        Tooltip = "The size of the deadzone circle",
+        Default = AimingSettingsDeadzoneFOVSettings.Scale,
+        Min = 0,
+        Max = 50,
+        Rounding = 1,
+        Callback = function(Value)
+            AimingSettingsDeadzoneFOVSettings.Scale = Value
+        end
+    })
+
+    -- //
+    local AimingSettingsTracerSettings = AimingSettings.TracerSettings
     TracerManagement:AddToggle("AimingTracerEnabled", {
         Text = "Enabled",
-        Default = AimingSettings.TracerSettings.Enabled,
+        Default = AimingSettingsTracerSettings.Enabled,
         Tooltip = "Toggle the tracer on and off",
         Callback = function(Value)
-            AimingSettings.TracerSettings.Enabled = Value
+            AimingSettingsTracerSettings.Enabled = Value
         end
     }):AddColorPicker("AimingTracerColour", {
         Text = "Colour",
-        Default = AimingSettings.TracerSettings.Colour,
+        Default = AimingSettingsTracerSettings.Colour,
         Tooltip = "The colour of the tracer",
         Callback = function(Value)
-            AimingSettings.TracerSettings.Colour = Value
+            AimingSettingsTracerSettings.Colour = Value
         end
     })
 
     -- //
     local IgnoredManagementBox = AimingTab:AddRightTabbox("Ignored Management")
+    local AimingSettingsIgnored = AimingSettings.Ignored
     local PlayerManagement = IgnoredManagementBox:AddTab("Player")
     local TeamManagement = IgnoredManagementBox:AddTab("Team")
 
@@ -262,10 +367,10 @@ do
     })
     PlayerManagement:AddToggle("AimingIgnoreLocalTeam", {
         Text = "Ignore Friends",
-        Default = AimingSettings.Ignored.IgnoreFriends,
+        Default = AimingSettingsIgnored.IgnoreFriends,
         Tooltip = "Ignores your Roblox friends",
         Callback = function(Value)
-            AimingSettings.Ignored.IgnoreFriends = Value
+            AimingSettingsIgnored.IgnoreFriends = Value
         end
     })
     PlayerManagement:AddButton("Ignore", function()
@@ -278,13 +383,13 @@ do
         end
 
         -- // Make sure the player is not already ignored
-        local PlayerI = table.find(AimingSettings.Ignored.Players, Player)
+        local PlayerI = table.find(AimingSettingsIgnored.Players, Player)
         if (PlayerI) then
             return Library:Notify("Player already ignored", 3)
         end
 
         -- //
-        table.insert(AimingSettings.Ignored.Players, Player)
+        table.insert(AimingSettingsIgnored.Players, Player)
     end):AddButton("Unignore", function()
         -- // Vars
         local Player = Players:FindFirstChild(PlayerDropdown.Value)
@@ -295,13 +400,13 @@ do
         end
 
         -- // Make sure the player is not already ignored
-        local PlayerI = table.find(AimingSettings.Ignored.Players, Player)
+        local PlayerI = table.find(AimingSettingsIgnored.Players, Player)
         if (not PlayerI) then
             return Library:Notify("Player not ignored", 3)
         end
 
         -- //
-        table.remove(AimingSettings.Ignored.Players, PlayerI)
+        table.remove(AimingSettingsIgnored.Players, PlayerI)
     end)
 
     -- //
@@ -314,10 +419,10 @@ do
     })
     TeamManagement:AddToggle("AimingIgnoreLocalTeam", {
         Text = "Ignore Local Team",
-        Default = AimingSettings.Ignored.IgnoreLocalTeam,
+        Default = AimingSettingsIgnored.IgnoreLocalTeam,
         Tooltip = "Ignores the local team",
         Callback = function(Value)
-            AimingSettings.Ignored.IgnoreLocalTeam = Value
+            AimingSettingsIgnored.IgnoreLocalTeam = Value
         end
     })
     TeamManagement:AddButton("Ignore", function()
@@ -330,13 +435,13 @@ do
         end
 
         -- // Make sure the player is not already ignored
-        local TeamI = table.find(AimingSettings.Ignored.Teams, Team)
+        local TeamI = table.find(AimingSettingsIgnored.Teams, Team)
         if (TeamI) then
             return Library:Notify("Team already ignored", 3)
         end
 
         -- //
-        table.insert(AimingSettings.Ignored.Teams, Team)
+        table.insert(AimingSettingsIgnored.Teams, Team)
     end):AddButton("Unignore", function()
         -- // Vars
         local Team = Teams:FindFirstChild(TeamDropdown.Value)
@@ -347,13 +452,13 @@ do
         end
 
         -- // Make sure the player is not already ignored
-        local TeamI = table.find(AimingSettings.Ignored.Teams, Team)
+        local TeamI = table.find(AimingSettingsIgnored.Teams, Team)
         if (not TeamI) then
             return Library:Notify("Team not ignored", 3)
         end
 
         -- //
-        table.remove(AimingSettings.Ignored.Teams, TeamI)
+        table.remove(AimingSettingsIgnored.Teams, TeamI)
     end)
 end
 
