@@ -24,11 +24,5 @@ function Aiming.Settings.RaycastIgnore()
     return Base
 end
 
--- // Ignore force fields
-function Aiming.Checks.Custom(Player)
-    local Character = AimingUtilities.Character(Player)
-    return not Character:FindFirstChildWhichIsA("ForceField")
-end
-
 -- //
 return Aiming

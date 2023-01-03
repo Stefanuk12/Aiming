@@ -16,10 +16,8 @@ AimingSettings.Ignored.IgnoreLocalTeam = false
 
 -- // Downed Check
 local AimingChecks = Aiming.Checks
-local AimingUtilities = Aiming.Utilities
-function AimingChecks.Custom(Player)
+function AimingChecks.Custom(Character)
     -- // Check if downed
-    local Character = AimingUtilities.Character(Player)
     local KOd = Character:WaitForChild("BodyEffects"):FindFirstChild("K.O")
     local Grabbed = Character:FindFirstChild("GRABBING_CONSTRAINT") ~= nil
 
