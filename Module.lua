@@ -49,7 +49,7 @@ local AimingSettings = {
     FriendCheck = true,
     ForcefieldCheck = true,
     HealthCheck = true,
-    InvisibleCheck = true,
+    InvisibleCheck = false,
     IgnoredCheck = true,
 
     HitChance = 100,
