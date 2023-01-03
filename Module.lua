@@ -41,6 +41,7 @@ local GetChildren = Instancenew("Part").GetChildren
 -- // Vars
 local AimingSettings = {
     Enabled = true,
+    InternalEnabled = false, -- // Do not modify, for internal use only
 
     VisibleCheck = true,
     TeamCheck = true,
@@ -764,7 +765,7 @@ do
 
     -- // Check if the module is enabled and we have targets
     function Checks.IsAvailable()
-        return (AimingSettings.Enabled == true and Aiming.Selected.Instance ~= nil)
+        return (AimingSettings.InternalEnabled and AimingSettings.Enabled == true and Aiming.Selected.Instance ~= nil)
     end
 end
 
@@ -1039,14 +1040,7 @@ function Aiming.GetClosestToCursor(deltaTime)
     end
 
     -- // Check if within deadzone
-    if (AimingSettingsDeadzoneFOVSettings.Enabled and ShortestDistance <= deadzonecircle.Radius) then
-        -- // Reset, do not target.
-        AimingSelected.Instance = nil
-        AimingSelected.Part = nil
-        AimingSelected.Position = nil
-        AimingSelected.Velocity = nil
-        AimingSelected.OnScreen = nil
-    end
+    AimingSettings.InternalEnabled = not (AimingSettingsDeadzoneFOVSettings.Enabled and ShortestDistance <= deadzonecircle.Radius)
 
     -- // Firing changed signals
     if (AimingSelected.Instance ~= ClosestPlayer) then
