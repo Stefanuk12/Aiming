@@ -389,7 +389,6 @@ do
             if (Result) then
                 -- // Vars
                 local PartHit = Result.Instance
-                print(PartHit:GetFullName())
                 local Visible = PartHit == Part or IsAncestorOf(PartAncestor, PartHit)
 
                 -- // Return
