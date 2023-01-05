@@ -8,7 +8,6 @@ local BeizerManager = loadstring(game:HttpGet("https://raw.githubusercontent.com
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
-local GuiService = game:GetService("GuiService")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
@@ -19,7 +18,6 @@ local LocalPlayer = Players.LocalPlayer
 -- // Optimisation Vars (ugly)
 local Drawingnew = Drawing.new
 local Color3fromRGB = Color3.fromRGB
-local GetGuiInset = GuiService.GetGuiInset
 local Randomnew = Random.new
 local mathfloor = math.floor
 local RaycastParamsnew = RaycastParams.new
@@ -901,10 +899,7 @@ function Aiming.GetClosestTargetPartToCursor(Character)
         PartPos = Vector2new(PartPos.X, PartPos.Y)
 
         local MousePosition = GetMouseLocation(UserInputService) + AimingSettings.Offset
-        local GuiInset = GetGuiInset(GuiService)
-        local AccountedPos = PartPos - GuiInset
-
-        local Magnitude = (AccountedPos - MousePosition).Magnitude
+        local Magnitude = (PartPos - MousePosition).Magnitude
 
         -- //
         local OurPart = Utilities.Character(LocalPlayer):FindFirstChild(TargetPart.Name) or TargetPart
