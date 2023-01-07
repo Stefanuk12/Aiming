@@ -47,7 +47,7 @@ local AimingSettings = {
     FriendCheck = true,
     ForcefieldCheck = true,
     HealthCheck = true,
-    InvisibleCheck = false,
+    InvisibleCheck = true,
     IgnoredCheck = true,
 
     HitChance = 100,
@@ -894,6 +894,11 @@ function Aiming.GetClosestTargetPartToCursor(Character)
         -- // Add to cache
         CharacterCache[TargetPart.Name] = TargetPart
 
+        -- // Make sure is visible
+        if (AimingSettings.InvisibleCheck and Checks.Invisible(TargetPart)) then
+            return
+        end
+
         -- // Get the length between Mouse and Target Part (on screen)
         local PartPos, onScreen = WorldToViewportPoint(GetCurrentCamera(), TargetPart.Position)
         PartPos = Vector2new(PartPos.X, PartPos.Y)
@@ -1004,7 +1009,7 @@ function Aiming.GetClosestToCursor(deltaTime)
         local TargetPartTemp, PartPositionTemp, PartPositionOnScreenTemp, Magnitude = Aiming.GetClosestTargetPartToCursor(Character)
 
         -- // Check if part exists, and custom. PartPositionOnScreenTemp IS ALWAYS TRUE, KEPT IN FOR REDUDANCY SAKE - MAY REMOVE LATER
-        if (not PartPositionOnScreenTemp or not TargetPartTemp or (AimingSettings.InvisibleCheck and Checks.Invisible(TargetPartTemp)) or not Checks.Custom(Character, Player)) then
+        if (not PartPositionOnScreenTemp or not TargetPartTemp or not Checks.Custom(Character, Player)) then
             continue
         end
 
