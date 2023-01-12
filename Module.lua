@@ -114,6 +114,11 @@ local Aiming = {
 }
 getgenv().Aiming = Aiming
 
+-- // Set RaycastIgnore
+function AimingSettings.RaycastIgnore()
+    return {Aiming.Utilities.Character(LocalPlayer), Aiming.Utilities.GetCurrentCamera()}
+end
+
 -- // Keep track of current friends
 local Friends = {}
 
