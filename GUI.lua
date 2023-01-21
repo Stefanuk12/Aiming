@@ -54,7 +54,7 @@ do
     end
 
     -- //
-    local UniversalTabbox = AimingTab:AddLeftTabbox()
+    local UniversalTabbox = AimingTab:AddLeftTabbox("Universal")
     local UniversalTab = UniversalTabbox:AddTab("Universal")
     UniversalTab:AddToggle("AimingEnabled", {
         Text = "Enabled",
