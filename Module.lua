@@ -651,8 +651,8 @@ do
         local IgnoredTeams = IgnoredSettings.Teams
 
         -- // Check for others
-        if (IgnoredSettings.IgnoreLocalTeam) then
-            return Utilities.TeamMatch(LocalPlayer, Player)
+        if (IgnoredSettings.IgnoreLocalTeam and Utilities.TeamMatch(LocalPlayer, Player)) then
+            return true
         end
 
         -- // Check if team is ignored
