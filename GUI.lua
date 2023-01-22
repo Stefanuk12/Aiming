@@ -76,6 +76,23 @@ do
         end
     })
 
+    UniversalTab:AddToggle("AimingLockModeEnabled", {
+        Text = "Lock Mode",
+        Default = AimingSettings.LockMode.Enabled,
+        Tooltip = "Your target will remain locked untl the keybind is pressed",
+        Callback = function(Value)
+            AimingSettings.LockMode.Enabled = Value
+        end
+    })
+    local UnlockBind = AimingSettings.LockMode.UnlockBind
+    UniversalTab:AddLabel("Unlock Bind"):AddKeyPicker("AimingLockModeUnlock", {
+        Text = "Unlock Bind",
+        Default = UnlockBind.EnumType == Enum.KeyCode and UnlockBind.Name or UnlockBind,
+        ChangedCallback = function(NewKey)
+            AimingSettings.LockMode.UnlockBind = NewKey
+        end
+    })
+
     local UniversalChecksBox = UniversalTabbox:AddTab("Checks")
     UniversalChecksBox:AddToggle("AimingVisibleCheck", {
         Text = "Visibility Check",

@@ -3,6 +3,7 @@ if getgenv().Aiming then return getgenv().Aiming end
 -- // Dependencies
 local SignalManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Signal/main/Manager.lua"))()
 local BeizerManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/BeizerManager.lua"))()
+local KeybindHandler = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/ROBLOX/master/Universal/KeybindHandler.lua"))()
 
 -- // Services
 local HttpService = game:GetService("HttpService")
@@ -55,6 +56,15 @@ local AimingSettings = {
     RaycastIgnore = nil,
     Offset = Vector2new(),
     MaxDistance = 1000,
+
+    LockMode = {
+        Enabled = false,
+
+        InternalEnabled = false, -- // Do not modify, for internal use only
+        LockedPlayer = nil, -- // Do not modify, for internal use only
+
+        UnlockBind = Enum.KeyCode.X
+    },
 
     FOVSettings = {
         Circle = Drawingnew("Circle"),
@@ -964,6 +974,7 @@ end
 
 -- //
 local PreviousPosition = nil
+local LockMode = AimingSettings.LockMode
 local AimingSelected = Aiming.Selected
 local AimingSettingsFOVSettings = AimingSettings.FOVSettings
 local AimingSettingsDeadzoneFOVSettings = AimingSettings.DeadzoneFOVSettings
@@ -993,6 +1004,11 @@ function Aiming.GetClosestToCursor(deltaTime)
 
     -- // Loop through all players
     for _, Player in pairs(Utilities.GetPlayers()) do
+        -- // Check
+        if (LockMode.Enabled and LockMode.InternalEnabled and Player ~= LockMode.LockedPlayer) then
+            continue
+        end
+
         -- // Get Character
         local Character = Utilities.Character(Player)
 
@@ -1068,6 +1084,12 @@ function Aiming.GetClosestToCursor(deltaTime)
     AimingSelected.Position = PartPosition
     AimingSelected.Velocity = PartVelocity
     AimingSelected.OnScreen = PartOnScreen
+
+    -- // Check
+    if (LockMode.Enabled and ClosestPlayer and not LockMode.InternalEnabled) then
+        LockMode.InternalEnabled = true
+        LockMode.LockedPlayer = ClosestPlayer
+    end
 end
 
 -- // Beizer Aim Curves
@@ -1123,6 +1145,18 @@ Heartbeat:Connect(function(deltaTime)
 
     Aiming.Loaded = true
 end)
+
+-- //
+KeybindHandler.CreateBind({
+    Keybind = function() return LockMode.UnlockBind end,
+    ProcessedCheck = true,
+    State = LockMode.InternalEnabled,
+    Callback = function(State)
+        LockMode.InternalEnabled = false
+        LockMode.LockedPlayer = nil
+    end,
+    Hold = false
+})
 
 -- // Other stuff
 task.spawn(function()
