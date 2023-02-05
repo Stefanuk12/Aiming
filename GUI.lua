@@ -75,6 +75,17 @@ do
             AimingSettings.HitChance = Value
         end
     })
+    UniversalTab:AddSlider("AimingMaxDistance", {
+        Text = "Max Distance",
+        Tooltip = "The max amount of studs a target can be away",
+        Default = AimingSettings.MaxDistance,
+        Min = 0,
+        Max = 3000,
+        Rounding = 1,
+        Callback = function(Value)
+            AimingSettings.MaxDistance = Value
+        end
+    })
 
     UniversalTab:AddToggle("AimingLockModeEnabled", {
         Text = "Lock Mode",
