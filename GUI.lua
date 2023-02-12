@@ -525,5 +525,5 @@ SaveManager:IgnoreThemeSettings()
 SaveManager:SetIgnoreIndexes({"MenuKeybind"})
 
 -- // Return
-Aiming.GUI = {Library, AimingTab, Window, UISettingsTab}
-return Library, AimingTab, Window, UISettingsTab
+Aiming.GUI = {Library, AimingTab, Window, UISettingsTab, ThemeManager, SaveManager}
+return Library, AimingTab, Window, UISettingsTab, ThemeManager, SaveManager
