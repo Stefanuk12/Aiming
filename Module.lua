@@ -79,7 +79,7 @@ local AimingSettings = {
 
     DeadzoneFOVSettings = {
         Circle = Drawingnew("Circle"),
-        Enabled = true,
+        Enabled = false,
         Visible = true,
         Scale = 10,
         Sides = 30,
