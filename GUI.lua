@@ -18,10 +18,14 @@ local Players = game:GetService("Players")
 local Teams = game:GetService("Teams")
 
 -- // Initialising the UI
+local AutoShow = Aiming.GUIAutoShow
+if (AutoShow == nil) then
+    AutoShow = true
+end
 local Window = Library:CreateWindow({
     Title = "epic hax",
     Center = true,
-    AutoShow = true
+    AutoShow = AutoShow
 })
 
 -- //

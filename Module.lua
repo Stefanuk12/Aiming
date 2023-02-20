@@ -41,6 +41,7 @@ local GetChildren = Instancenew("Part").GetChildren
 local AimingSettings = {
     Enabled = true,
     InternalEnabled = false, -- // Do not modify, for internal use only
+    GUIAutoShow = true,
 
     VisibleCheck = true,
     TeamCheck = true,
