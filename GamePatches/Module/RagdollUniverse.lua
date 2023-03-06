@@ -10,8 +10,6 @@ local AimingUtilities = Aiming.Utilities
 local AimingSettings = Aiming.Settings
 
 -- // Disable Team Check
-local AimingIgnored = Aiming.Ignored
-AimingIgnored.TeamCheck(false)
 AimingSettings.Ignored.IgnoreLocalTeam = false
 
 -- // Set targetpart
