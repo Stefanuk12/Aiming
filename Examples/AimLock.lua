@@ -29,6 +29,10 @@ end
 
 -- // For the toggle and stuff
 local function CheckInput(Input, Expected)
+    if (not Input or not Expected) then
+        return false
+    end
+
     local InputType = Expected.EnumType == Enum.KeyCode and "KeyCode" or "UserInputType"
     return Input[InputType] == Expected
 end
