@@ -230,21 +230,11 @@ if (Aiming.GUI) then
         Mode = Settings.ToggleBind and "Toggle" or "Hold",
         Text = "Aim Lock",
         NoUI = false,
-        ChangedCallback = function(Key)
-            Settings.Keybind = Key
+        Callback = function(State)
+            IsToggled = State
         end
     })
-    MainTab:AddToggle("AimLockEnabledToggle", {
-        Text = "Toggle Mode",
-        Default = Settings.ToggleBind,
-        Tooltip = "When disabled, it is hold to activate.",
-        Callback = function(Value)
-            Settings.ToggleBind = Value
-
-            Options.AimLockEnabledKey.Mode = Value and "Toggle" or "Hold"
-            Options.AimLockEnabledKey:Update()
-        end
-    })
+    Settings.Keybind = nil
 
     -- //
     MouseTab:AddSlider("AimLockMouseSmoothness", {
