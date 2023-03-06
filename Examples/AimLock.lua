@@ -2,9 +2,6 @@
 local Aiming = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/Load.lua"))()("Module")
 local AimingChecks = Aiming.Checks
 local AimingSelected = Aiming.Selected
-local AimingSettingsIgnored = Aiming.Settings.Ignored
-local AimingSettingsIgnoredPlayers = Aiming.Settings.Ignored.Players
-local AimingSettingsIgnoredWhitelistMode = AimingSettingsIgnored.WhitelistMode
 
 -- // Services
 local UserInputService = game:GetService("UserInputService")
@@ -13,9 +10,6 @@ local RunService = game:GetService("RunService")
 -- // Vars
 Aiming.AimLock = {
     Enabled = true,
-    FocusMode = false, -- // Stays locked on to that player only. If true then uses the aim lock keybind, if a input type is entered, then that is used
-    CurrentlyFocused = nil,
-    ToggleBind = false, -- // true = Toggle, false = Hold (to enable)
     Keybind = Enum.UserInputType.MouseButton2, -- // You can also have Enum.KeyCode.E, etc.
 }
 local IsToggled = false
@@ -33,46 +27,6 @@ function Settings.AimLockPosition(CameraMode)
     return Position, {}
 end
 
--- // Focuses a player
-local Backup = {table.unpack(AimingSettingsIgnoredPlayers)}
-function Settings.FocusPlayer(Player)
-    table.insert(AimingSettingsIgnoredPlayers, Player)
-    AimingSettingsIgnoredWhitelistMode.Players = true
-end
-
--- // Unfocuses a player
-function Settings.Unfocus(Player)
-    -- // Find it within ignored, and remove if found
-    local PlayerI = table.find(AimingSettingsIgnoredPlayers, Player)
-    if (PlayerI) then
-        table.remove(AimingSettingsIgnoredPlayers, PlayerI)
-    end
-
-    -- // Disable whitelist mode
-    AimingSettingsIgnoredWhitelistMode.Players = false
-end
-
--- // Unfocuses everything
-function Settings.UnfocusAll(Replacement)
-    Replacement = Replacement or Backup
-    AimingSettingsIgnored.Players = Replacement
-    AimingSettingsIgnoredWhitelistMode.Players = false
-end
-
--- //
-function Settings.FocusHandler()
-    if (Settings.CurrentlyFocused) then
-        Settings.Unfocus(Settings.CurrentlyFocused)
-        Settings.CurrentlyFocused = nil
-        return
-    end
-
-    if (AimingChecks.IsAvailable()) then
-        Settings.FocusPlayer(AimingSelected.Instance)
-        Settings.CurrentlyFocused = AimingSelected.Instance
-    end
-end
-
 -- // For the toggle and stuff
 local function CheckInput(Input, Expected)
     local InputType = Expected.EnumType == Enum.KeyCode and "KeyCode" or "UserInputType"
@@ -86,22 +40,12 @@ UserInputService.InputBegan:Connect(function(Input, GameProcessedEvent)
     end
 
     -- // Check if matches bind
-    local FocusMode = Settings.FocusMode
     if (CheckInput(Input, Settings.Keybind)) then
         if (Settings.ToggleBind) then
             IsToggled = not IsToggled
         else
             IsToggled = true
         end
-
-        if (FocusMode == true) then
-            Settings.FocusHandler()
-        end
-    end
-
-    -- // FocusMode check
-    if (typeof(FocusMode) == "Enum" and CheckInput(Input, FocusMode)) then
-        Settings.FocusHandler()
     end
 end)
 UserInputService.InputEnded:Connect(function(Input, GameProcessedEvent)
@@ -167,20 +111,6 @@ if (Aiming.GUI and false) then
         default = Settings.Keybind,
         changedCallback = function(value)
             Settings.Keybind = value
-        end
-    })
-
-    MainSection:addToggle({
-        title = "Focus Mode (Uses Keybind)",
-        default = Settings.FocusMode,
-        callback = function(value)
-            Settings.FocusMode = value
-        end
-    })
-    MainSection:addKeybind({
-        title = "Focus Mode (Custom Bind)",
-        changedCallback = function(value)
-            Settings.FocusMode = value
         end
     })
 
@@ -313,23 +243,6 @@ if (Aiming.GUI) then
 
             Options.AimLockEnabledKey.Mode = Value and "Toggle" or "Hold"
             Options.AimLockEnabledKey:Update()
-        end
-    })
-
-    MainTab:AddToggle("AimLockFocusMode", {
-        Text = "Enabled",
-        Default = Settings.Enabled,
-        Tooltip = "Only targets the current targetted player",
-        Callback = function(Value)
-            Settings.FocusMode = Value
-        end
-    }):AddKeyPicker("AimLockFocusModeKey", {
-        Default = Settings.Keybind,
-        SyncToggleState = false,
-        Text = "Focus Mode",
-        NoUI = false,
-        ChangedCallback = function(Key)
-            Settings.FocusMode = Key
         end
     })
 
