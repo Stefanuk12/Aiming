@@ -280,6 +280,14 @@ do
             AimingSettingsFOVSettings.Enabled = Value
         end
     })
+    FOVManagement:AddToggle("AimingFOVFollowSelected", {
+        Text = "Follow Selected",
+        Default = AimingSettingsFOVSettings.FollowSelected,
+        Tooltip = "Make the FOV circle follow the current target",
+        Callback = function(Value)
+            AimingSettingsFOVSettings.FollowSelected = Value
+        end
+    })
     FOVManagement:AddToggle("AimingFOVVisible", {
         Text = "Visible",
         Default = AimingSettingsFOVSettings.Visible,

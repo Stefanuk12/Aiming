@@ -75,7 +75,9 @@ local AimingSettings = {
         Scale = 60,
         Sides = 12,
         Colour = Color3fromRGB(231, 84, 128),
-        DynamicFOVConstant = 25
+        DynamicFOVConstant = 25,
+
+        FollowSelected = false
     },
 
     DeadzoneFOVSettings = {
@@ -210,7 +212,7 @@ function Aiming.UpdateFOV()
     local Settings = AimingSettings.FOVSettings
 
     -- // Set Circle Properties
-    circle.Position = MousePosition
+    circle.Position = AimingSettings.FOVSettings.FollowSelected and Aiming.Selected.Position or MousePosition
     circle.NumSides = Settings.Sides
     circle.Color = Settings.Colour
 
@@ -778,7 +780,19 @@ do
 
     -- // Check if the module is enabled and we have targets
     function Checks.IsAvailable()
-        return (AimingSettings.InternalEnabled and AimingSettings.Enabled == true and Aiming.Selected.Instance ~= nil)
+        -- // Check enabled
+        if not (AimingSettings.InternalEnabled and AimingSettings.Enabled == true and Aiming.Selected.Instance ~= nil) then
+            return false
+        end
+
+        -- // Check if FOV
+        if (AimingSettings.FOVSettings.FollowSelected) then
+            local MousePosition = GetMouseLocation(UserInputService)
+            return (MousePosition - circle.Position).Magnitude < circle.Radius
+        end
+
+        -- // Available
+        return true
     end
 end
 
@@ -988,6 +1002,7 @@ function Aiming.GetClosestToCursor(deltaTime)
     local PartOnScreen = nil
     local Chance = Utilities.CalculateChance(AimingSettings.HitChance)
     local ShortestDistance = AimingSettingsFOVSettings.Enabled and circle.Radius or 1/0
+    ShortestDistance = AimingSettingsFOVSettings.FollowSelected and 1/0 or ShortestDistance
 
     -- // See if it passed the chance or is not enabled
     if (not Chance or not AimingSettings.Enabled) then
