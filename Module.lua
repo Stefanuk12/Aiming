@@ -1018,8 +1018,16 @@ function Aiming.GetClosestToCursor(deltaTime)
         return
     end
 
+    -- // Ensure we can get our own character
+    local LocalCharacter = Utilities.Character(LocalPlayer)
+
     -- // Loop through all players
     for _, Player in pairs(Utilities.GetPlayers()) do
+        -- // Check our local character
+        if (not LocalCharacter) then
+            break
+        end
+
         -- // Check
         if (LockMode.Enabled and LockMode.InternalEnabled and Player ~= LockMode.LockedPlayer) then
             continue
