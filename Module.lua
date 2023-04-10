@@ -1,9 +1,37 @@
 if getgenv().Aiming then return getgenv().Aiming end
 
 -- // Dependencies (these take a long time to initially load due to the HttpGet, you can inline them for a faster, instant load time)
-local SignalManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Signal/main/Manager.lua"))()
-local BeizerManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/BeizerManager.lua"))()
-local KeybindHandler = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/ROBLOX/master/Universal/KeybindHandler.lua"))()
+local function FastHttpGet(URL)
+    if (syn and syn.request) then
+        return syn.request({Url = URL}).Body
+    end
+    return game:HttpGet(URL)
+end
+local function FastLoadDependencies(...) -- credits to 735432575140757605
+    -- // Vars
+    local Loaded = {}
+    local Arguments = {...}
+    local Amount = #Arguments
+
+    -- // Loop through each argument
+    for i, v in pairs(Arguments) do
+        -- // Load and set the loaded script
+        task.spawn(function()
+            Loaded[i] = loadstring(FastHttpGet(v))()
+        end)
+    end
+
+    -- // Wait until we loaded each dependency
+    repeat task.wait() until #Loaded == Amount
+
+    -- // Return all of the dependencies as a tuple
+    return table.unpack(Loaded)
+end
+local SignalManager, BeizerManager, KeybindHandler = FastLoadDependencies(
+    "https://raw.githubusercontent.com/Stefanuk12/Signal/main/Manager.lua",
+    "https://raw.githubusercontent.com/Stefanuk12/Aiming/main/BeizerManager.lua",
+    "https://raw.githubusercontent.com/Stefanuk12/ROBLOX/master/Universal/KeybindHandler.lua"
+)
 
 -- // Services
 local HttpService = game:GetService("HttpService")
