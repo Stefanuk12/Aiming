@@ -1,6 +1,6 @@
 if getgenv().Aiming then return getgenv().Aiming end
 
--- // Dependencies
+-- // Dependencies (these take a long time to initially load due to the HttpGet, you can inline them for a faster, instant load time)
 local SignalManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Signal/main/Manager.lua"))()
 local BeizerManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/Aiming/main/BeizerManager.lua"))()
 local KeybindHandler = loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/ROBLOX/master/Universal/KeybindHandler.lua"))()
