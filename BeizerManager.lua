@@ -25,6 +25,7 @@ do
         local self = setmetatable({}, BeizerManager)
 
         -- // Vars
+        self.CurrentMode = "Mouse"
         self.t = 0
         self.tThreshold = 0.99995
         self.StartPoint = Vector2.new()
@@ -46,7 +47,7 @@ do
     end
 
     -- // Aim to
-    function BeizerManager.ChangeData(self, Data)
+    function BeizerManager:ChangeData(Data)
         -- // Vars
         self.StartPoint = (self.GetStartPoint() or Data.StartPoint)
         self.EndPoint = self.ModifyEndPoint(Data.TargetPosition)
@@ -115,7 +116,7 @@ do
     end
 
     -- //
-    function BeizerManager.DoIteration(self)
+    function BeizerManager:DoIteration()
         -- // Make sure is active
         if (not self.Active) then
             return
@@ -168,7 +169,7 @@ do
     end
 
     -- // Start
-    function BeizerManager.Start(self)
+    function BeizerManager:Start()
         self.Started = true
 
         local thread = task.spawn(function()
@@ -181,18 +182,24 @@ do
     end
 
     -- // Stop
-    function BeizerManager.Stop(self)
+    function BeizerManager:Stop()
         self.Started = false
     end
 
     -- //
-    function BeizerManager.StopCurrent(self)
+    function BeizerManager:StopCurrent()
         self.Active = false
         self.t = 0
     end
 
     -- // Switch to "Camera" Mode
-    function BeizerManager.CameraMode(self)
+    function BeizerManager:CameraMode()
+        -- // Ignore if already mode
+        if (self.Mode == "Camera") then
+            return
+        end
+        self.Mode = "Camera"
+
         -- // Override get starting point
         self.GetStartPoint = function()
             local Pitch, Yaw, _ = CurrentCamera.CFrame:ToEulerAnglesYXZ()
@@ -223,10 +230,75 @@ do
 
     -- // Switch back to "Mouse" Mode
     function BeizerManager.MouseMode(self)
+        -- // Ignore if already mode
+        if (self.Mode == "Mouse") then
+            return
+        end
+        self.Mode = "Mouse"
+
+        -- // Set
         self.GetStartPoint = BeizerManager.GetStartPoint
         self.ModifyEndPoint = BeizerManager.ModifyEndPoint
         self.Function = MouseOffsetFunction
         self.DrawPathFunc = BeizerManager.DrawPathFunc
+    end
+
+    -- // Aims to target position with mouse
+    function BeizerManager:AimToMouse(TargetPosition)
+        -- // Check if target position matches
+        if (typeof(TargetPosition) == "Vector3") then
+            TargetPosition = CurrentCamera:WorldToViewportPoint(TargetPosition)
+            TargetPosition = Vector2.new(TargetPosition.X, TargetPosition.Y)
+        end
+
+        -- // Set mode
+        self:MouseMode()
+
+        -- // Aim
+        return self:ChangeData({
+            TargetPosition = TargetPosition
+        })
+    end
+
+    -- // Aims to target position with camera
+    function BeizerManager:AimToCamera(TargetPosition)
+        -- // Check if target position matches
+        if (typeof(TargetPosition) == "Vector2") then
+            TargetPosition = CurrentCamera:ViewportPointToRay(TargetPosition.X, TargetPosition.Y, 0).Origin
+        end
+
+        -- // Set mode
+        self:CameraMode()
+
+        -- // Aim
+        return self:ChangeData({
+            TargetPosition = TargetPosition
+        })
+    end
+
+    -- // Dynamic Aim To
+    function BeizerManager:AimTo(TargetPosition, PreferMode)
+        -- // Prefer mode
+        if (PreferMode) then
+            if (PreferMode == "Camera") then
+                return self:AimToCamera(TargetPosition)
+            elseif (PreferMode == "Mouse") then
+                return self:AimToMouse(TargetPosition)
+            end
+        end
+
+        -- // Vars
+        local IsZoomed = (CurrentCamera.CFrame.Position - CurrentCamera.Focus.Position).Magnitude < 0.7
+        local MouseLockedCenter = UserInputService.MouseBehavior == Enum.MouseBehavior.LockCenter
+        local HoldingRightClick = UserInputService.MouseBehavior == Enum.MouseBehavior.LockCurrentPosition
+
+        -- // Use mouse
+        if not (IsZoomed or MouseLockedCenter or HoldingRightClick) then
+            return self:AimToMouse(TargetPosition)
+        end
+
+        -- // Use camera
+        return self:AimToCamera(TargetPosition)
     end
 end
 
