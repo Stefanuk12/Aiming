@@ -14,33 +14,83 @@ local function MouseOffsetFunction(self, X, Y)
     mousemoveabs(NewPosition.X, NewPosition.Y)
 end
 
+-- // Combine two tables
+local function CombineTables(Base, ToAdd)
+    -- // Default
+    Base = Base or {}
+    ToAdd = ToAdd or {}
+
+    -- // Loop through data we want to add
+    for i, v in pairs(ToAdd) do
+        -- // Recursive
+        local BaseValue = Base[i] or false
+        if (typeof(v) == "table" and typeof(BaseValue) == "table") then
+            CombineTables(BaseValue, v)
+            continue
+        end
+
+        -- // Set
+        Base[i] = v
+    end
+
+    -- // Return
+    return Base
+end
+
+-- // Deep copying
+local function DeepCopy(Original)
+    -- // Assert
+    assert(typeof(Original) == "table", "invalid type for Original (expected table)")
+
+    -- // Vars
+    local Copy = {}
+
+    -- // Loop through original
+    for i, v in pairs(Original) do
+        -- // Recursion if table
+        if (typeof(v) == "table") then
+            v = DeepCopy(v)
+        end
+
+        -- // Set
+        Copy[i] = v
+    end
+
+    -- // Return the copy
+    return Copy
+end
+
 -- //
 local BeizerManager = {}
 BeizerManager.__index = BeizerManager
 do
+    -- // Default Data
+    BeizerManager.DefaultData = {
+        CurrentMode = "Mouse",
+        t = 0,
+        tThreshold = 0.99995,
+        StartPoint = Vector2.new(),
+        EndPoint = Vector2.new(),
+        CurvePoints = {
+            Vector2.new(1, 1),
+            Vector2.new(1, 1)
+        },
+        Active = false,
+        Smoothness = 0.0025,
+        DrawPath = false,
+        Function = MouseOffsetFunction,
+        Offset = function() return Vector2.new() end, -- // can be static too,
+        Started = false,
+    }
 
     -- // Constructor
-    function BeizerManager.new()
+    function BeizerManager.new(Data)
         -- // Initialise object
         local self = setmetatable({}, BeizerManager)
 
-        -- // Vars
-        self.CurrentMode = "Mouse"
-        self.t = 0
-        self.tThreshold = 0.99995
-        self.StartPoint = Vector2.new()
-        self.EndPoint = Vector2.new()
-        self.CurvePoints = {
-            Vector2.new(1, 1),
-            Vector2.new(1, 1)
-        }
-        self.Active = false
-        self.Smoothness = 0.0025
-        self.DrawPath = false
-        self.Function = MouseOffsetFunction
-        self.Offset = function() return Vector2.new() end -- // can be static too
-
-        self.Started = false
+        -- // Initialise defaults
+        Data = CombineTables(DeepCopy(BeizerManager.DefaultData), Data)
+        CombineTables(self, Data)
 
         -- // Return Object
         return self
@@ -277,7 +327,9 @@ do
     end
 
     -- // Dynamic Aim To
-    function BeizerManager:AimTo(TargetPosition, PreferMode)
+    function BeizerManager:AimTo(TargetPosition, PreferMode, Data)
+        CombineTables(self, Data)
+
         -- // Prefer mode
         if (PreferMode) then
             if (PreferMode == "Camera") then
