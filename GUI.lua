@@ -18,7 +18,7 @@ local Players = game:GetService("Players")
 local Teams = game:GetService("Teams")
 
 -- // Initialising the UI
-local AutoShow = Aiming.GUIAutoShow
+local AutoShow = AimingSettings.GUIAutoShow
 if (AutoShow == nil) then
     AutoShow = true
 end
