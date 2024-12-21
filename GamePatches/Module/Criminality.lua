@@ -32,7 +32,7 @@ function AimingChecks.Custom(Character)
     end
 
     -- // Return if they are downed
-    return Downed.Value
+    return not Downed.Value
 end
 
 -- // Return
